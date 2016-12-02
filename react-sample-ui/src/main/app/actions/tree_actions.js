@@ -1,30 +1,56 @@
 import NuxeoUtils from '../utils/nuxeo_utils';
+import TreeNode from '../tree_node/tree_node';
 import DocumentStore from '../data/document_store';
 
-const TreeActions = {
-    fetchRoot(){
+export const SET_CURRENT_NODE = "SET_CURRENT_NODE";
+export const SET_ROOT_NODE = "SET_ROOT_NODE";
+export const ADD_CHILD_NODES = "ADD_CHILD_NODES";
+
+
+export function setCurrentNode(node) {
+    return {
+        type: SET_CURRENT_NODE,
+        currentNode: node
+    }
+}
+
+export function setRootNode() {
+    return (dispatch) => {
         NuxeoUtils.crudUtil({
             success: (doc) => {
-                let root = DocumentStore.setRoot(doc);
-                TreeActions.fetchChildren(root);
+                let rootNode = new TreeNode(doc);
+                dispatch({type: SET_ROOT_NODE, root: rootNode});
+                dispatch(setCurrentNode(rootNode));
+                fetchChildren(rootNode)(dispatch);
             }
         })
-    },
+    }
+}
 
-    fetchChildren(node) {
-        let success = (docs) => {
-            docs.entries.forEach((entry) => {
-                DocumentStore.addChild(node, entry);
+export function fetchChildren(node) {
+    return (dispatch) => {
+            NuxeoUtils.crudUtil({
+                path: node.item.uid,
+                adapter: 'children',
+                success: (docs) => {
+                    let childNodes = docs.entries.map((entry) => {
+                        return new TreeNode(entry)
+                    });
+                    dispatch({
+                        type: ADD_CHILD_NODES,
+                        parentNode: node,
+                        childNodes: childNodes
+                    })
+                }
             });
-        };
-        let path = node.item.uid;
-        NuxeoUtils.crudUtil({
-            path: path,
-            adapter: 'children',
-            success: success
-        });
-    },
 
+    }
+}
+
+
+
+
+const TreeActions = {
     deleteDocument(node){
         let path = node.item.uid;
         let success = (doc) => {
@@ -74,27 +100,6 @@ const TreeActions = {
         NuxeoUtils.attachFile(node, upload, success);
     },
 
-    setWorkingNode(node){
-        DocumentStore.setWorkingNode(node);
-    },
-
-    getWorkingNode(){
-        return DocumentStore.getWorkingNode();
-    },
-
-    toggleShowChildren(node, callback) {
-        if (node.showChildren && node === TreeActions.getWorkingNode()) {
-            node.showChildren = false;
-        } else {
-            node.showChildren = true;
-            if (Object.keys(node.children).length === 0){
-                TreeActions.fetchChildren(node);
-            }
-            TreeActions.setWorkingNode(node);
-        }
-        callback();
-    },
-
 };
 
 ["acl", "workflow", "task", "audit"].forEach((adapter) => {
@@ -112,36 +117,5 @@ const TreeActions = {
        });
    }
 });
-
-
-TreeActions.getblob = (node) => {
-  let success = (res) => {
-      DocumentStore.setProperty(node,res, 'blob');
-  };
-
-  let path = node.item.uid;
-  NuxeoUtils.crudUtil({
-    method: "get",
-      path: path,
-      adapter: "blob",
-      operation: "file:content",
-      success: success
-  });
-
-};
-
-TreeActions.getrendition = (node) => {
-    let success = (res) => {
-        DocumentStore.setProperty(node, res, 'rendition');
-    };
-    let path = node.item.uid;
-    NuxeoUtils.crudUtil({
-        method: "get",
-        path: path,
-        adapter: "rendition",
-        operation: "thumbnail",
-        success: success
-    });
-};
 
 export default TreeActions;

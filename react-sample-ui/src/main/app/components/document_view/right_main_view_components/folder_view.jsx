@@ -1,5 +1,5 @@
 import React from 'react';
-import TreeActions from '../../actions/tree_actions';
+import TreeActions from '../../../actions/tree_actions';
 
 class FolderView extends React.Component {
     constructor(props) {
@@ -13,14 +13,16 @@ class FolderView extends React.Component {
 
     _setWorkingFile(node, e){
         e.preventDefault();
-        TreeActions.setWorkingNode(node);
-        TreeActions.fetchChildren(node);
+        node.parent.showChildren = true;
+        node.showChildren = true;
+        this.props.setCurrentNode(node);
+        this.props.fetchChildren(node);
     }
 
     render() {
-        let file = TreeActions.getWorkingNode();
-        let fileProperties = file.item.properties;
-        let childNodes = file.children;
+        let node = this.props.fileTree.currentNode;
+        let fileProperties = node.item.properties;
+        let childNodes = node.children;
         let list = Object.keys(childNodes).map((id) => {
             return (
                 <li key={id} className="file-view-list-item">

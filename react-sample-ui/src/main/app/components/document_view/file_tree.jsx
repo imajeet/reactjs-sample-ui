@@ -1,6 +1,6 @@
 import React from 'react';
-import TreeActions from '../actions/tree_actions';
-import DocumentTypeConstants from '../constants/document_type_constants';
+import { fetchChildren } from '../../actions/tree_actions';
+import DocumentTypeConstants from '../../constants/document_type_constants';
 
 class FileTree extends React.Component {
   constructor(props) {
@@ -9,11 +9,21 @@ class FileTree extends React.Component {
 
   _showChildren(e) {
     e.stopPropagation();
-    TreeActions.toggleShowChildren(this.props.node, this.forceUpdate.bind(this));
+    let node = this.props.node;
+    if (node.showChildren && node === this.props.currentNode) {
+      node.showChildren = false;
+    } else {
+      node.showChildren = true;
+      if (Object.keys(node.children).length === 0){
+        this.props.dispatch(fetchChildren(node))
+      }
+      this.props.setCurrentNode(node);
+    }
+    this.forceUpdate();
   }
 
-  render(){
-    let workingNode = TreeActions.getWorkingNode();
+  render() {
+    let workingNode = this.props.currentNode;
     let node = this.props.node;
     let containers = DocumentTypeConstants.containers.concat(DocumentTypeConstants.defaultContainers);
     let subFiles;
@@ -31,7 +41,12 @@ class FileTree extends React.Component {
       subFiles = keys.map((childId) => {
         return (
           <li key={childId}>
-            <FileTree node={node.children[childId]} />
+            <FileTree
+                node={node.children[childId]}
+                setCurrentNode={this.props.setCurrentNode}
+                currentNode={this.props.currentNode}
+                dispatch={this.props.dispatch}
+            />
           </li>
         );
       });
@@ -43,7 +58,6 @@ class FileTree extends React.Component {
     } else {
       title = node.item.title;
     }
-
     return (
       <div className={`file-tree-view`} >
            <div className="file-tree-title-wrapper" onClick={this._showChildren.bind(this)}>
@@ -60,4 +74,4 @@ class FileTree extends React.Component {
   }
 }
 
-module.exports = FileTree;
+export default FileTree

@@ -1,7 +1,7 @@
 import React from 'react';
-import TreeActions from '../../actions/tree_actions.js';
-import DocumentTypeConstants from '../../constants/document_type_constants';
-import DocumentStore from '../../data/document_store.js';
+import TreeActions from '../../../actions/tree_actions.js';
+import DocumentTypeConstants from '../../../constants/document_type_constants';
+import DocumentStore from '../../../data/document_store.js';
 
 const containers = DocumentTypeConstants.containers;
 const documents = DocumentTypeConstants.documents;
@@ -28,7 +28,7 @@ class CreateDocument extends React.Component {
     }
 
     _handleSubmit(e) {
-        let parentNode = this.props.workingNode;
+        let parentNode = this.props.fileTree.currentNode;
         e.preventDefault();
         let success = (res) => {
             DocumentStore.addChild(parentNode, res);

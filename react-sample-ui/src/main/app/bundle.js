@@ -64,19 +64,17 @@
 
 	var _log_in2 = _interopRequireDefault(_log_in);
 
-	var _main_view = __webpack_require__(272);
-
-	var _main_view2 = _interopRequireDefault(_main_view);
-
-	var _errors_container = __webpack_require__(289);
+	var _errors_container = __webpack_require__(288);
 
 	var _errors_container2 = _interopRequireDefault(_errors_container);
+
+	var _document_view_container = __webpack_require__(290);
 
 	var _document_store = __webpack_require__(264);
 
 	var _document_store2 = _interopRequireDefault(_document_store);
 
-	var _store = __webpack_require__(290);
+	var _store = __webpack_require__(291);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -115,7 +113,7 @@
 	                _reactRouter.Router,
 	                { history: _reactRouter.hashHistory },
 	                _react2.default.createElement(_reactRouter.Route, { path: '/', component: _log_in2.default }),
-	                _react2.default.createElement(_reactRouter.Route, { path: '/documents', component: _main_view2.default, onEnter: redirectConditions })
+	                _react2.default.createElement(_reactRouter.Route, { path: '/documents', component: _document_view_container.DocumentViewContainers.MainViewContainer, onEnter: redirectConditions })
 	            )
 	        )
 	    );
@@ -28205,11 +28203,8 @@
 	    success: function success(res) {
 	        console.log(res);
 	    },
-	    fail: function fail(res, xhr) {
-	        _store.dispatch((0, _error_actions.receiveErrors)(res, xhr));
-	        setTimeout(function () {
-	            _store.dispatch((0, _error_actions.clearErrors)());
-	        }, 1500);
+	    fail: function fail(res) {
+	        (0, _error_actions.flashErrors)(res)(_store.dispatch);
 	    }
 	};
 
@@ -28219,6 +28214,8 @@
 	            baseURL: logIn.url
 	        });
 	        _nuxeo = nuxeo;
+	        _nuxeo.header('X-NXDocumentProperties', '*');
+	        window.nuxeo = _nuxeo;
 	        var success = function success(res) {
 	            _document_store2.default.setUser(res);
 	            directToDashboard();
@@ -28226,7 +28223,6 @@
 	        NuxeoUtils.crudUtil({
 	            success: success
 	        });
-
 	        _nuxeo.enrichers({ document: ['subtypes'] });
 	        // _nuxeo.login()
 	        //   .then(function(res) {
@@ -28289,9 +28285,11 @@
 	        if (finalParams.operation) {
 	            path += '/' + finalParams.operation;
 	        }
+
 	        switch (finalParams.method.toLowerCase()) {
+
 	            case "get":
-	                _nuxeo.repository().schemas(finalParams.schemas).fetch(path).then(finalParams.success).catch(finalParams.fail);
+	                _nuxeo.repository().schemas(finalParams.schemas).headers({ 'X-NXenrichers.document': 'subtypes' }).fetch(path).then(finalParams.success).catch(finalParams.fail);
 	                break;
 	            case "delete":
 	                _nuxeo.repository().schemas(finalParams.schemas).delete(path).then(finalParams.success).catch(finalParams.fail);
@@ -28313,11 +28311,15 @@
 	    },
 	    addStore: function addStore(store) {
 	        _store = store;
+	    },
+	    getSubTypes: function getSubTypes() {
+	        _nuxeo.request('/default-domain').header('X-NXenrichers.document', 'subtypes').fetch().then(function (res) {
+	            debugger;
+	        });
 	    }
 	};
 
 	exports.default = NuxeoUtils;
-
 
 	Object.keys(NuxeoUtils).forEach(function (key) {
 	    window[key] = NuxeoUtils[key];
@@ -45533,6 +45535,7 @@
 	});
 	exports.receiveErrors = receiveErrors;
 	exports.clearErrors = clearErrors;
+	exports.flashErrors = flashErrors;
 	var RECEIVE_ERRORS = exports.RECEIVE_ERRORS = 'RECEIVE_ERRORS';
 	var CLEAR_ERRORS = exports.CLEAR_ERRORS = 'CLEAR_ERRORS';
 
@@ -45547,6 +45550,16 @@
 	    return {
 	        type: CLEAR_ERRORS,
 	        errors: []
+	    };
+	}
+
+	function flashErrors(errors) {
+	    return function (dispatch) {
+	        dispatch(receiveErrors(errors));
+
+	        setTimeout(function () {
+	            dispatch(clearErrors());
+	        }, 1500);
 	    };
 	}
 
@@ -56477,6 +56490,10 @@
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
@@ -56487,21 +56504,11 @@
 
 	var _document_store2 = _interopRequireDefault(_document_store);
 
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	var _errors_component = __webpack_require__(274);
-
-	var _errors_component2 = _interopRequireDefault(_errors_component);
-
-	var _right_main_view = __webpack_require__(275);
-
-	var _right_main_view2 = _interopRequireDefault(_right_main_view);
-
-	var _file_tree = __webpack_require__(288);
+	var _file_tree = __webpack_require__(287);
 
 	var _file_tree2 = _interopRequireDefault(_file_tree);
+
+	var _document_view_container = __webpack_require__(290);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56512,10 +56519,9 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	// store
 
-	// actions
-
-
 	// components
+
+	//containers
 
 
 	var MainView = function (_React$Component) {
@@ -56527,9 +56533,7 @@
 	    var _this = _possibleConstructorReturn(this, (MainView.__proto__ || Object.getPrototypeOf(MainView)).call(this, props));
 
 	    _this.state = {
-	      user: _document_store2.default.getUser(),
-	      root: undefined,
-	      workingNode: undefined
+	      user: _document_store2.default.getUser()
 	    };
 	    return _this;
 	  }
@@ -56537,37 +56541,25 @@
 	  _createClass(MainView, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      this.rootListener = _document_store2.default.addListener(this._rootListener.bind(this));
-	      this.nodeListener = _document_store2.default.addListener(this._setWorkingNode.bind(this));
-	      _tree_actions2.default.fetchRoot();
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      this.rootListener.remove();
-	      this.nodeListener.remove();
-	    }
-	  }, {
-	    key: '_setWorkingNode',
-	    value: function _setWorkingNode() {
-	      this.setState({ workingNode: _document_store2.default.getWorkingNode() });
-	    }
-	  }, {
-	    key: '_rootListener',
-	    value: function _rootListener() {
-	      this.setState({ root: _document_store2.default.getRoot() });
+	      this.props.setRootNode();
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var tree = void 0;
 	      var workingNode = void 0;
-	      if (this.state.root) {
-	        tree = _react2.default.createElement(_file_tree2.default, { node: this.state.root });
+	      var currentNode = this.props.fileTree.currentNode;
+	      if (this.props.fileTree.root.item) {
+	        tree = _react2.default.createElement(_file_tree2.default, {
+	          node: this.props.fileTree.root,
+	          setCurrentNode: this.props.setCurrentNode,
+	          currentNode: currentNode,
+	          dispatch: this.props.dispatch
+	        });
 	      }
 
-	      if (this.state.workingNode) {
-	        workingNode = _react2.default.createElement(_right_main_view2.default, { workingNode: this.state.workingNode });
+	      if (currentNode.item) {
+	        workingNode = _react2.default.createElement(_document_view_container.DocumentViewContainers.RightMainViewContainer, null);
 	      }
 
 	      return _react2.default.createElement(
@@ -56595,7 +56587,7 @@
 	  return MainView;
 	}(_react2.default.Component);
 
-	module.exports = MainView;
+	exports.default = MainView;
 
 /***/ },
 /* 273 */
@@ -56606,10 +56598,18 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.ADD_CHILD_NODES = exports.SET_ROOT_NODE = exports.SET_CURRENT_NODE = undefined;
+	exports.setCurrentNode = setCurrentNode;
+	exports.setRootNode = setRootNode;
+	exports.fetchChildren = fetchChildren;
 
 	var _nuxeo_utils = __webpack_require__(262);
 
 	var _nuxeo_utils2 = _interopRequireDefault(_nuxeo_utils);
+
+	var _tree_node = __webpack_require__(297);
+
+	var _tree_node2 = _interopRequireDefault(_tree_node);
 
 	var _document_store = __webpack_require__(264);
 
@@ -56617,28 +56617,50 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var TreeActions = {
-	    fetchRoot: function fetchRoot() {
+	var SET_CURRENT_NODE = exports.SET_CURRENT_NODE = "SET_CURRENT_NODE";
+	var SET_ROOT_NODE = exports.SET_ROOT_NODE = "SET_ROOT_NODE";
+	var ADD_CHILD_NODES = exports.ADD_CHILD_NODES = "ADD_CHILD_NODES";
+
+	function setCurrentNode(node) {
+	    return {
+	        type: SET_CURRENT_NODE,
+	        currentNode: node
+	    };
+	}
+
+	function setRootNode() {
+	    return function (dispatch) {
 	        _nuxeo_utils2.default.crudUtil({
 	            success: function success(doc) {
-	                var root = _document_store2.default.setRoot(doc);
-	                TreeActions.fetchChildren(root);
+	                var rootNode = new _tree_node2.default(doc);
+	                dispatch({ type: SET_ROOT_NODE, root: rootNode });
+	                dispatch(setCurrentNode(rootNode));
+	                fetchChildren(rootNode)(dispatch);
 	            }
 	        });
-	    },
-	    fetchChildren: function fetchChildren(node) {
-	        var success = function success(docs) {
-	            docs.entries.forEach(function (entry) {
-	                _document_store2.default.addChild(node, entry);
-	            });
-	        };
-	        var path = node.item.uid;
+	    };
+	}
+
+	function fetchChildren(node) {
+	    return function (dispatch) {
 	        _nuxeo_utils2.default.crudUtil({
-	            path: path,
+	            path: node.item.uid,
 	            adapter: 'children',
-	            success: success
+	            success: function success(docs) {
+	                var childNodes = docs.entries.map(function (entry) {
+	                    return new _tree_node2.default(entry);
+	                });
+	                dispatch({
+	                    type: ADD_CHILD_NODES,
+	                    parentNode: node,
+	                    childNodes: childNodes
+	                });
+	            }
 	        });
-	    },
+	    };
+	}
+
+	var TreeActions = {
 	    deleteDocument: function deleteDocument(node) {
 	        var path = node.item.uid;
 	        var success = function success(doc) {
@@ -56682,24 +56704,6 @@
 	            TreeActions.setWorkingNode(node);
 	        };
 	        _nuxeo_utils2.default.attachFile(node, upload, success);
-	    },
-	    setWorkingNode: function setWorkingNode(node) {
-	        _document_store2.default.setWorkingNode(node);
-	    },
-	    getWorkingNode: function getWorkingNode() {
-	        return _document_store2.default.getWorkingNode();
-	    },
-	    toggleShowChildren: function toggleShowChildren(node, callback) {
-	        if (node.showChildren && node === TreeActions.getWorkingNode()) {
-	            node.showChildren = false;
-	        } else {
-	            node.showChildren = true;
-	            if (Object.keys(node.children).length === 0) {
-	                TreeActions.fetchChildren(node);
-	            }
-	            TreeActions.setWorkingNode(node);
-	        }
-	        callback();
 	    }
 	};
 
@@ -56719,103 +56723,17 @@
 	    };
 	});
 
-	TreeActions.getblob = function (node) {
-	    var success = function success(res) {
-	        _document_store2.default.setProperty(node, res, 'blob');
-	    };
-
-	    var path = node.item.uid;
-	    _nuxeo_utils2.default.crudUtil({
-	        method: "get",
-	        path: path,
-	        adapter: "blob",
-	        operation: "file:content",
-	        success: success
-	    });
-	};
-
-	TreeActions.getrendition = function (node) {
-	    var success = function success(res) {
-	        _document_store2.default.setProperty(node, res, 'rendition');
-	    };
-	    var path = node.item.uid;
-	    _nuxeo_utils2.default.crudUtil({
-	        method: "get",
-	        path: path,
-	        adapter: "rendition",
-	        operation: "thumbnail",
-	        success: success
-	    });
-	};
-
 	exports.default = TreeActions;
 
 /***/ },
 /* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ErrorsComponent = function (_React$Component) {
-	    _inherits(ErrorsComponent, _React$Component);
-
-	    function ErrorsComponent(props) {
-	        _classCallCheck(this, ErrorsComponent);
-
-	        return _possibleConstructorReturn(this, (ErrorsComponent.__proto__ || Object.getPrototypeOf(ErrorsComponent)).call(this, props));
-	    }
-
-	    _createClass(ErrorsComponent, [{
-	        key: "render",
-	        value: function render() {
-	            var errors = void 0;
-	            if (this.props.errors.length > 0) {
-	                errors = this.props.errors[0].message;
-	            }
-
-	            return _react2.default.createElement(
-	                "div",
-	                { className: "main-wrapper" },
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "error-messages" },
-	                    errors
-	                ),
-	                this.props.children
-	            );
-	        }
-	    }]);
-
-	    return ErrorsComponent;
-	}(_react2.default.Component);
-
-	;
-
-	exports.default = ErrorsComponent;
-
-/***/ },
-/* 275 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -56827,53 +56745,39 @@
 
 	var _tree_actions2 = _interopRequireDefault(_tree_actions);
 
-	var _file_view = __webpack_require__(276);
-
-	var _file_view2 = _interopRequireDefault(_file_view);
-
-	var _folder_view = __webpack_require__(277);
-
-	var _folder_view2 = _interopRequireDefault(_folder_view);
-
-	var _create_document_form = __webpack_require__(278);
+	var _create_document_form = __webpack_require__(277);
 
 	var _create_document_form2 = _interopRequireDefault(_create_document_form);
 
-	var _show_acl = __webpack_require__(280);
+	var _show_acl = __webpack_require__(279);
 
 	var _show_acl2 = _interopRequireDefault(_show_acl);
 
-	var _show_audit = __webpack_require__(281);
+	var _show_audit = __webpack_require__(280);
 
 	var _show_audit2 = _interopRequireDefault(_show_audit);
 
-	var _show_task = __webpack_require__(282);
+	var _show_task = __webpack_require__(281);
 
 	var _show_task2 = _interopRequireDefault(_show_task);
 
-	var _show_workflow = __webpack_require__(283);
+	var _show_workflow = __webpack_require__(282);
 
 	var _show_workflow2 = _interopRequireDefault(_show_workflow);
 
-	var _show_blob = __webpack_require__(284);
-
-	var _show_blob2 = _interopRequireDefault(_show_blob);
-
-	var _show_rendition = __webpack_require__(285);
-
-	var _show_rendition2 = _interopRequireDefault(_show_rendition);
-
-	var _attach_file = __webpack_require__(286);
+	var _attach_file = __webpack_require__(285);
 
 	var _attach_file2 = _interopRequireDefault(_attach_file);
 
-	var _edit_document = __webpack_require__(287);
+	var _edit_document = __webpack_require__(286);
 
 	var _edit_document2 = _interopRequireDefault(_edit_document);
 
-	var _document_type_constants = __webpack_require__(279);
+	var _document_type_constants = __webpack_require__(278);
 
 	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
+
+	var _document_view_container = __webpack_require__(290);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56883,17 +56787,12 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	// components
-
-
 	var workingButtons = {
 	  "Create Document": _create_document_form2.default,
 	  "ACL": _show_acl2.default,
 	  "Work Flow": _show_workflow2.default,
 	  "Tasks": _show_task2.default,
 	  "Audit": _show_audit2.default,
-	  "Blob": _show_blob2.default,
-	  "Rendition": _show_rendition2.default,
 	  "Attach File": _attach_file2.default,
 	  "Edit": _edit_document2.default
 	};
@@ -56944,9 +56843,8 @@
 	    value: function render() {
 	      var _this2 = this;
 
-	      var node = this.props.workingNode;
-	      var fileProperties = node.item.properties;
-
+	      var currentNode = this.props.fileTree.currentNode;
+	      var fileProperties = currentNode.item.properties;
 	      var propertiesList = _react2.default.createElement(
 	        'div',
 	        null,
@@ -56978,35 +56876,30 @@
 
 	      if (this.state.showWorkingButton) {
 	        var props = {
-	          workingNode: node,
+	          current: currentNode,
 	          _setWorkingButton: this._setWorkingButton
 	        };
 	        showWorking = _react2.default.createElement(workingButtons[this.state.showWorkingButton], props);
 	      }
 
-	      var title = void 0;
-	      if (node.item.type === 'root') {
-	        title = "Root";
-	      } else {
-	        title = node.item.title;
-	      }
+	      var title = fileProperties['dc:title'];
 
 	      var fileOrFolderView = void 0;
 	      var attachFileOrCreate = void 0;
-	      if (containers.includes(node.item.type)) {
+	      if (containers.includes(currentNode.item.type)) {
 	        attachFileOrCreate = _react2.default.createElement(
 	          'button',
 	          { onClick: this._setWorkingButton.bind(this, "Create Document"), className: 'submit-button' },
 	          'Create Document'
 	        );
-	        fileOrFolderView = _react2.default.createElement(_folder_view2.default, { workingNode: this.props.workingNode });
+	        fileOrFolderView = _react2.default.createElement(_document_view_container.DocumentViewContainers.FolderViewContainer, null);
 	      } else {
 	        attachFileOrCreate = _react2.default.createElement(
 	          'button',
 	          { onClick: this._setWorkingButton.bind(this, "Attach File"), className: 'submit-button' },
 	          'Attach File'
 	        );
-	        fileOrFolderView = _react2.default.createElement(_file_view2.default, { workingNode: this.props.workingNode });
+	        fileOrFolderView = _react2.default.createElement(_document_view_container.DocumentViewContainers.FileViewContainer, null);
 	      }
 
 	      return _react2.default.createElement(
@@ -57025,7 +56918,7 @@
 	          buttonList,
 	          _react2.default.createElement(
 	            'button',
-	            { onClick: this._deleteCurrentFile.bind(this, node), className: 'submit-button delete-button' },
+	            { onClick: this._deleteCurrentFile.bind(this, currentNode), className: 'submit-button delete-button' },
 	            'Delete Current'
 	          )
 	        ),
@@ -57043,10 +56936,10 @@
 	  return RightMainView;
 	}(_react2.default.Component);
 
-	module.exports = RightMainView;
+	exports.default = RightMainView;
 
 /***/ },
-/* 276 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57077,7 +56970,7 @@
 	    _createClass(FileView, [{
 	        key: "render",
 	        value: function render() {
-	            var node = this.props.workingNode;
+	            var node = this.props.fileTree.currentNode;
 	            var content = node.item.properties["file:content"];
 	            var embedded = void 0;
 	            if (content) {
@@ -57121,7 +57014,7 @@
 	module.exports = FileView;
 
 /***/ },
-/* 277 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57163,17 +57056,19 @@
 	        key: '_setWorkingFile',
 	        value: function _setWorkingFile(node, e) {
 	            e.preventDefault();
-	            _tree_actions2.default.setWorkingNode(node);
-	            _tree_actions2.default.fetchChildren(node);
+	            node.parent.showChildren = true;
+	            node.showChildren = true;
+	            this.props.setCurrentNode(node);
+	            this.props.fetchChildren(node);
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var _this2 = this;
 
-	            var file = _tree_actions2.default.getWorkingNode();
-	            var fileProperties = file.item.properties;
-	            var childNodes = file.children;
+	            var node = this.props.fileTree.currentNode;
+	            var fileProperties = node.item.properties;
+	            var childNodes = node.children;
 	            var list = Object.keys(childNodes).map(function (id) {
 	                return _react2.default.createElement(
 	                    'li',
@@ -57214,7 +57109,7 @@
 	module.exports = FolderView;
 
 /***/ },
-/* 278 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57229,7 +57124,7 @@
 
 	var _tree_actions2 = _interopRequireDefault(_tree_actions);
 
-	var _document_type_constants = __webpack_require__(279);
+	var _document_type_constants = __webpack_require__(278);
 
 	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
 
@@ -57286,7 +57181,7 @@
 	        value: function _handleSubmit(e) {
 	            var _this3 = this;
 
-	            var parentNode = this.props.workingNode;
+	            var parentNode = this.props.fileTree.currentNode;
 	            e.preventDefault();
 	            var success = function success(res) {
 	                _document_store2.default.addChild(parentNode, res);
@@ -57367,7 +57262,7 @@
 	module.exports = CreateDocument;
 
 /***/ },
-/* 279 */
+/* 278 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -57384,7 +57279,7 @@
 	exports.default = DocumentTypeConstants;
 
 /***/ },
-/* 280 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57453,7 +57348,7 @@
 	module.exports = ShowACL;
 
 /***/ },
-/* 281 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57540,7 +57435,7 @@
 	module.exports = ShowAudit;
 
 /***/ },
-/* 282 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57594,7 +57489,7 @@
 	module.exports = ShowTask;
 
 /***/ },
-/* 283 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57648,121 +57543,9 @@
 	module.exports = ShowWorkFlow;
 
 /***/ },
-/* 284 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ShowBlob = function (_React$Component) {
-	    _inherits(ShowBlob, _React$Component);
-
-	    function ShowBlob(props) {
-	        _classCallCheck(this, ShowBlob);
-
-	        var _this = _possibleConstructorReturn(this, (ShowBlob.__proto__ || Object.getPrototypeOf(ShowBlob)).call(this, props));
-
-	        _tree_actions2.default.getblob(_this.props.workingNode);
-	        return _this;
-	    }
-
-	    _createClass(ShowBlob, [{
-	        key: 'render',
-	        value: function render() {
-	            var node = this.props.workingNode;
-	            var urlString = void 0;
-	            if (node.blob) {
-	                urlString = node.blob.url;
-	            }
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'right-main-view-show-working-button' },
-	                urlString
-	            );
-	        }
-	    }]);
-
-	    return ShowBlob;
-	}(_react2.default.Component);
-
-	module.exports = ShowBlob;
-
-/***/ },
+/* 283 */,
+/* 284 */,
 /* 285 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ShowRendition = function (_React$Component) {
-	    _inherits(ShowRendition, _React$Component);
-
-	    function ShowRendition(props) {
-	        _classCallCheck(this, ShowRendition);
-
-	        var _this = _possibleConstructorReturn(this, (ShowRendition.__proto__ || Object.getPrototypeOf(ShowRendition)).call(this, props));
-
-	        _tree_actions2.default.getrendition(_this.props.workingNode);
-	        return _this;
-	    }
-
-	    _createClass(ShowRendition, [{
-	        key: 'render',
-	        value: function render() {
-	            var node = this.props.workingNode;
-	            var urlString = void 0;
-	            if (node.rendition) {
-	                urlString = node.rendition.url;
-	            }
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'right-main-view-show-working-button' },
-	                _react2.default.createElement('img', { src: urlString })
-	            );
-	        }
-	    }]);
-
-	    return ShowRendition;
-	}(_react2.default.Component);
-
-	module.exports = ShowRendition;
-
-/***/ },
-/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57910,7 +57693,7 @@
 	module.exports = AttachFile;
 
 /***/ },
-/* 287 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58006,10 +57789,14 @@
 	module.exports = EditDocument;
 
 /***/ },
-/* 288 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -58019,9 +57806,7 @@
 
 	var _tree_actions = __webpack_require__(273);
 
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	var _document_type_constants = __webpack_require__(279);
+	var _document_type_constants = __webpack_require__(278);
 
 	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
 
@@ -58046,12 +57831,24 @@
 	    key: '_showChildren',
 	    value: function _showChildren(e) {
 	      e.stopPropagation();
-	      _tree_actions2.default.toggleShowChildren(this.props.node, this.forceUpdate.bind(this));
+	      var node = this.props.node;
+	      if (node.showChildren && node === this.props.currentNode) {
+	        node.showChildren = false;
+	      } else {
+	        node.showChildren = true;
+	        if (Object.keys(node.children).length === 0) {
+	          this.props.dispatch((0, _tree_actions.fetchChildren)(node));
+	        }
+	        this.props.setCurrentNode(node);
+	      }
+	      this.forceUpdate();
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var workingNode = _tree_actions2.default.getWorkingNode();
+	      var _this2 = this;
+
+	      var workingNode = this.props.currentNode;
 	      var node = this.props.node;
 	      var containers = _document_type_constants2.default.containers.concat(_document_type_constants2.default.defaultContainers);
 	      var subFiles = void 0;
@@ -58070,7 +57867,12 @@
 	          return _react2.default.createElement(
 	            'li',
 	            { key: childId },
-	            _react2.default.createElement(FileTree, { node: node.children[childId] })
+	            _react2.default.createElement(FileTree, {
+	              node: node.children[childId],
+	              setCurrentNode: _this2.props.setCurrentNode,
+	              currentNode: _this2.props.currentNode,
+	              dispatch: _this2.props.dispatch
+	            })
 	          );
 	        });
 	      }
@@ -58081,7 +57883,6 @@
 	      } else {
 	        title = node.item.title;
 	      }
-
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'file-tree-view' },
@@ -58107,10 +57908,10 @@
 	  return FileTree;
 	}(_react2.default.Component);
 
-	module.exports = FileTree;
+	exports.default = FileTree;
 
 /***/ },
-/* 289 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58123,7 +57924,7 @@
 
 	var _error_actions = __webpack_require__(266);
 
-	var _errors_component = __webpack_require__(274);
+	var _errors_component = __webpack_require__(289);
 
 	var _errors_component2 = _interopRequireDefault(_errors_component);
 
@@ -58143,6 +57944,9 @@
 	        },
 	        clearErrors: function clearErrors() {
 	            return dispatch((0, _error_actions.clearErrors)());
+	        },
+	        flashErrors: function flashErrors(errors) {
+	            return dispatch((0, _error_actions.flashErrors)(errors));
 	        }
 	    };
 	};
@@ -58150,6 +57954,68 @@
 	var ErrorContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_errors_component2.default);
 
 	exports.default = ErrorContainer;
+
+/***/ },
+/* 289 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ErrorsComponent = function (_React$Component) {
+	    _inherits(ErrorsComponent, _React$Component);
+
+	    function ErrorsComponent(props) {
+	        _classCallCheck(this, ErrorsComponent);
+
+	        return _possibleConstructorReturn(this, (ErrorsComponent.__proto__ || Object.getPrototypeOf(ErrorsComponent)).call(this, props));
+	    }
+
+	    _createClass(ErrorsComponent, [{
+	        key: "render",
+	        value: function render() {
+
+	            var errors = void 0;
+	            if (this.props.errors.length > 0) {
+	                errors = this.props.errors[0].message;
+	            }
+
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "main-wrapper" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "error-messages" },
+	                    errors
+	                ),
+	                this.props.children
+	            );
+	        }
+	    }]);
+
+	    return ErrorsComponent;
+	}(_react2.default.Component);
+
+	;
+
+	exports.default = ErrorsComponent;
 
 /***/ },
 /* 290 */
@@ -58160,14 +58026,113 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.DocumentViewContainers = undefined;
+
+	var _reactRedux = __webpack_require__(233);
+
+	var _tree_actions = __webpack_require__(273);
+
+	var _error_actions = __webpack_require__(266);
+
+	var _file_tree = __webpack_require__(287);
+
+	var _file_tree2 = _interopRequireDefault(_file_tree);
+
+	var _main_view = __webpack_require__(272);
+
+	var _main_view2 = _interopRequireDefault(_main_view);
+
+	var _right_main_view = __webpack_require__(274);
+
+	var _right_main_view2 = _interopRequireDefault(_right_main_view);
+
+	var _attach_file = __webpack_require__(285);
+
+	var _attach_file2 = _interopRequireDefault(_attach_file);
+
+	var _create_document_form = __webpack_require__(277);
+
+	var _create_document_form2 = _interopRequireDefault(_create_document_form);
+
+	var _edit_document = __webpack_require__(286);
+
+	var _edit_document2 = _interopRequireDefault(_edit_document);
+
+	var _file_view = __webpack_require__(275);
+
+	var _file_view2 = _interopRequireDefault(_file_view);
+
+	var _folder_view = __webpack_require__(276);
+
+	var _folder_view2 = _interopRequireDefault(_folder_view);
+
+	var _show_acl = __webpack_require__(279);
+
+	var _show_acl2 = _interopRequireDefault(_show_acl);
+
+	var _show_audit = __webpack_require__(280);
+
+	var _show_audit2 = _interopRequireDefault(_show_audit);
+
+	var _show_task = __webpack_require__(281);
+
+	var _show_task2 = _interopRequireDefault(_show_task);
+
+	var _show_workflow = __webpack_require__(282);
+
+	var _show_workflow2 = _interopRequireDefault(_show_workflow);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var mapStateToProps = function mapStateToProps(_ref) {
+	    var fileTree = _ref.fileTree;
+	    return {
+	        fileTree: fileTree
+	    };
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(_dispatch) {
+	    return {
+	        setCurrentNode: function setCurrentNode(node) {
+	            return _dispatch((0, _tree_actions.setCurrentNode)(node));
+	        },
+	        flashErrors: function flashErrors(errors) {
+	            return _dispatch((0, _error_actions.flashErrors)(errors));
+	        },
+	        setRootNode: function setRootNode(rootNode) {
+	            return _dispatch((0, _tree_actions.setRootNode)(rootNode));
+	        },
+	        dispatch: function dispatch(action) {
+	            return _dispatch(action);
+	        },
+	        fetchChildren: function fetchChildren(parentNode) {
+	            return _dispatch((0, _tree_actions.fetchChildren)(parentNode));
+	        }
+	    };
+	};
+
+	var DocumentViewContainers = exports.DocumentViewContainers = [_main_view2.default, _right_main_view2.default, _file_view2.default, _folder_view2.default].reduce(function (acc, component) {
+	    acc[component.name + 'Container'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(component);
+	    return acc;
+	}, {});
+
+/***/ },
+/* 291 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
 
 	var _redux = __webpack_require__(240);
 
-	var _reduxThunk = __webpack_require__(291);
+	var _reduxThunk = __webpack_require__(292);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _root_reducer = __webpack_require__(292);
+	var _root_reducer = __webpack_require__(293);
 
 	var _root_reducer2 = _interopRequireDefault(_root_reducer);
 
@@ -58182,7 +58147,7 @@
 	exports.default = configureStore;
 
 /***/ },
-/* 291 */
+/* 292 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -58210,7 +58175,7 @@
 	exports['default'] = thunk;
 
 /***/ },
-/* 292 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58221,18 +58186,23 @@
 
 	var _redux = __webpack_require__(240);
 
-	var _errors_reducer = __webpack_require__(293);
+	var _errors_reducer = __webpack_require__(294);
 
 	var _errors_reducer2 = _interopRequireDefault(_errors_reducer);
+
+	var _file_tree_reducer = __webpack_require__(295);
+
+	var _file_tree_reducer2 = _interopRequireDefault(_file_tree_reducer);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = (0, _redux.combineReducers)({
-	    errors: _errors_reducer2.default
+	    errors: _errors_reducer2.default,
+	    fileTree: _file_tree_reducer2.default
 	});
 
 /***/ },
-/* 293 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58258,6 +58228,105 @@
 	};
 
 	exports.default = ErrorsReducer;
+
+/***/ },
+/* 295 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _lodash = __webpack_require__(263);
+
+	var _tree_actions = __webpack_require__(273);
+
+	var defaultState = {
+	    root: {},
+	    currentNode: {}
+	};
+
+	var FileTreeReducer = function FileTreeReducer() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
+	    var action = arguments[1];
+
+	    switch (action.type) {
+	        case _tree_actions.SET_CURRENT_NODE:
+	            return (0, _lodash.merge)({}, state, { currentNode: action.currentNode });
+	        case _tree_actions.SET_ROOT_NODE:
+	            return (0, _lodash.merge)({}, state, { root: action.root });
+	        case _tree_actions.ADD_CHILD_NODES:
+	            action.childNodes.forEach(function (child) {
+	                action.parentNode.addChild(child);
+	            });
+	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        default:
+	            return state;
+	    }
+	};
+
+	exports.default = FileTreeReducer;
+
+/***/ },
+/* 296 */,
+/* 297 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var TreeNode = function () {
+	    function TreeNode(item) {
+	        _classCallCheck(this, TreeNode);
+
+	        this.item = item;
+	        this.uid = item.uid;
+	        this.parent = undefined;
+	        this.showChildren = false;
+	        //adapter parameters
+	        this.children = {};
+	        this.acl = undefined;
+	        this.workflow = undefined;
+	        this.audit = undefined;
+	        this.task = undefined;
+	        this.blob = undefined;
+	        this.rendition = undefined;
+	    }
+
+	    _createClass(TreeNode, [{
+	        key: "setParent",
+	        value: function setParent(node) {
+	            if (this.parent) {
+	                this.parent.removeChild(this);
+	            }
+	            this.parent = node;
+	            node.children[this.uid] = this;
+	        }
+	    }, {
+	        key: "removeChild",
+	        value: function removeChild(node) {
+	            delete this.children[node.uid];
+	        }
+	    }, {
+	        key: "addChild",
+	        value: function addChild(node) {
+	            node.setParent(this);
+	        }
+	    }]);
+
+	    return TreeNode;
+	}();
+
+	exports.default = TreeNode;
 
 /***/ }
 /******/ ]);
