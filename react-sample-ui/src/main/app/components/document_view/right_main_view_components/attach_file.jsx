@@ -1,27 +1,18 @@
 import React from 'react';
-import TreeActions from '../../../actions/tree_actions.js';
-import NuxeoUtils from '../../../utils/nuxeo_utils.js';
+import {attachFile} from '../../../actions/tree_actions';
+
+const initialState = {
+  title: "",
+  description: "",
+  type: "File",
+  fileUrl: "",
+  file: undefined
+};
 
 class AttachFile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      title: "",
-      description: "",
-      type: "File",
-      fileUrl: "",
-      file: undefined
-    };
-  }
-
-  componentWillReceiveProps(newProps) {
-      this.setState({
-      title: "",
-      description: "",
-      type: "File",
-      fileUrl: "",
-      file: undefined
-    });
+    this.state = initialState;
   }
 
   _handleChange(field) {
@@ -45,25 +36,17 @@ class AttachFile extends React.Component {
 
   _handleSubmit(e) {
     e.preventDefault();
-    // let formData = new FormData();
-    // formData.append("doc[title]", this.state.title);
-    // formData.append("doc[nuxeo-entity]", this.state.file);
-    // formData.append("doc[description]", this.state.description);
-    TreeActions.attachFile(this.props.workingNode, this.state);
-    this.setState({
-      title: "",
-      description: "",
-      type: "File",
-      fileUrl: "",
-      file: undefined
-    });
+    let dispatch = this.props.dispatch;
+    let callback = () => {
+      this.setState(initialState);
+      dispatch(this.props.setCurrentNode(this.props.currentNode));
+    };
+    attachFile(this.props.currentNode, this.state, callback)(dispatch);
   }
 
   render() {
-    let button = <input className="button-form" type="submit" value="Upload"/>;
     let submit = this._handleSubmit.bind(this);
     let preview = this._previewFile.bind(this);
-
     let embedded;
     if(this.state.file) {
       embedded = <embed src={this.state.fileUrl} type={this.state.file.type} className="upload-preview-embed"/>;

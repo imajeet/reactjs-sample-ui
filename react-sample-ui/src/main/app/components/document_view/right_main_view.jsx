@@ -1,27 +1,17 @@
 import React from 'react';
-import TreeActions from '../../actions/tree_actions.js';
-
-import CreateDocumentForm from './right_main_view_components/create_document_form.jsx';
-import ShowACL from './right_main_view_components/show_acl.jsx';
-import ShowAudit from './right_main_view_components/show_audit.jsx';
-import ShowTask from './right_main_view_components/show_task.jsx';
-import ShowWorkFlow from './right_main_view_components/show_workflow.jsx';
-import AttachFile from './right_main_view_components/attach_file.jsx';
-import EditDocument from './right_main_view_components/edit_document.jsx'
-
 import DocumentTypeConstants from '../../constants/document_type_constants';
 
-import { DocumentViewContainers } from './document_view_container';
-
-const workingButtons = {
-  "Create Document": CreateDocumentForm,
-  "ACL": ShowACL,
-  "Work Flow": ShowWorkFlow,
-  "Tasks": ShowTask,
-  "Audit": ShowAudit,
-  "Attach File": AttachFile,
-  "Edit": EditDocument
-};
+import {
+    FolderViewContainer,
+    FileViewContainer,
+    CreateDocumentFormContainer,
+    ShowACLContainer,
+    ShowAuditContainer,
+    ShowTaskContainer,
+    ShowWorkFlowContainer,
+    AttachFileContainer,
+    EditDocumentContainer,
+} from './document_view_container';
 
 const showWorkingButtons = ['ACL', 'Work Flow', 'Tasks', 'Audit', 'Edit'];
 
@@ -36,15 +26,17 @@ class RightMainView extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.workingNode != this.props.workingNode) {
+    if (newProps.fileTree.currentNode != this.props.fileTree.currentNode) {
       this.setState({showWorkingButton: undefined});
     }
   }
 
   _deleteCurrentFile(node, e){
     e.preventDefault();
-    TreeActions.setWorkingNode(node.parent);
-    TreeActions.deleteDocument(node);
+    let callback = () => {
+      this.props.setCurrentNode(this.props.fileTree.currentNode.parent)
+    };
+    this.props.deleteDocument(node, callback);
   }
 
   _setWorkingButton(buttonText, e){
@@ -56,14 +48,24 @@ class RightMainView extends React.Component {
   }
 
   render() {
+    const workingButtons = {
+      "Create Document": CreateDocumentFormContainer,
+      "ACL": ShowACLContainer,
+      "Work Flow": ShowWorkFlowContainer,
+      "Tasks": ShowTaskContainer,
+      "Audit": ShowAuditContainer,
+      "Attach File": AttachFileContainer,
+      "Edit": EditDocumentContainer,
+    };
+
     let currentNode = this.props.fileTree.currentNode;
     let fileProperties = currentNode.item.properties;
     let propertiesList = (
         <div>
           Creator : {fileProperties["dc:creator"]} <br/>
           Last Contributor : {fileProperties["dc:lastContributor"]} <br/>
-          Created At : {new Date(fileProperties["dc:created"]).toString()} <br/>
-          Modified At : {new Date(fileProperties["dc:modified"]).toString()}
+          Created At : { new Date(fileProperties["dc:created"]).toString() } <br/>
+          Modified At : { new Date(fileProperties["dc:modified"]).toString() }
         </div>
     );
 
@@ -74,13 +76,14 @@ class RightMainView extends React.Component {
     });
 
     let showWorking;
-
     if (this.state.showWorkingButton) {
       let props = {
-        current: currentNode,
-        _setWorkingButton: this._setWorkingButton
+        currentNode: currentNode,
+        _setWorkingButton: this._setWorkingButton,
+        dispatch: this.props.dispatch,
+        setCurrentNode: this.props.setCurrentNode
       };
-      showWorking = React.createElement(workingButtons[this.state.showWorkingButton], props);
+      showWorking = React.createElement(workingButtons[this.state.showWorkingButton]);
     }
 
     let title = fileProperties['dc:title'];
@@ -89,10 +92,10 @@ class RightMainView extends React.Component {
     let attachFileOrCreate;
     if (containers.includes(currentNode.item.type)){
       attachFileOrCreate = <button onClick={this._setWorkingButton.bind(this,"Create Document")} className="submit-button">Create Document</button>
-      fileOrFolderView = <DocumentViewContainers.FolderViewContainer/>;
+      fileOrFolderView = <FolderViewContainer/>;
     } else {
       attachFileOrCreate = <button onClick={this._setWorkingButton.bind(this,"Attach File")} className="submit-button">Attach File</button>;
-      fileOrFolderView = <DocumentViewContainers.FileViewContainer/>;
+      fileOrFolderView = <FileViewContainer/>;
     }
 
     return (

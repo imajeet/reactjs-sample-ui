@@ -64,17 +64,17 @@
 
 	var _log_in2 = _interopRequireDefault(_log_in);
 
-	var _errors_container = __webpack_require__(288);
+	var _errors_container = __webpack_require__(272);
 
 	var _errors_container2 = _interopRequireDefault(_errors_container);
 
-	var _document_view_container = __webpack_require__(290);
+	var _document_view_container = __webpack_require__(274);
 
 	var _document_store = __webpack_require__(264);
 
 	var _document_store2 = _interopRequireDefault(_document_store);
 
-	var _store = __webpack_require__(291);
+	var _store = __webpack_require__(290);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -113,7 +113,7 @@
 	                _reactRouter.Router,
 	                { history: _reactRouter.hashHistory },
 	                _react2.default.createElement(_reactRouter.Route, { path: '/', component: _log_in2.default }),
-	                _react2.default.createElement(_reactRouter.Route, { path: '/documents', component: _document_view_container.DocumentViewContainers.MainViewContainer, onEnter: redirectConditions })
+	                _react2.default.createElement(_reactRouter.Route, { path: '/documents', component: _document_view_container.MainViewContainer, onEnter: redirectConditions })
 	            )
 	        )
 	    );
@@ -28214,7 +28214,7 @@
 	            baseURL: logIn.url
 	        });
 	        _nuxeo = nuxeo;
-	        _nuxeo.header('X-NXDocumentProperties', '*');
+	        // _nuxeo.header('X-NXDocumentProperties', '*');
 	        window.nuxeo = _nuxeo;
 	        var success = function success(res) {
 	            _document_store2.default.setUser(res);
@@ -28223,7 +28223,7 @@
 	        NuxeoUtils.crudUtil({
 	            success: success
 	        });
-	        _nuxeo.enrichers({ document: ['subtypes'] });
+	        // _nuxeo.enrichers({document: ['subtypes']});
 	        // _nuxeo.login()
 	        //   .then(function(res) {
 	        //     DocumentStore.setUser(res);
@@ -28262,13 +28262,13 @@
 	            });
 	        });
 	    },
-	    attachFile: function attachFile(docToAttachTo, upload, success) {
+	    attachFile: function attachFile(node, upload, success) {
 	        var blob = new Nuxeo.Blob({ content: upload.file });
 	        var batch = _nuxeo.batchUpload();
 	        _nuxeo.Promise.all([batch.upload(blob)]).then(function (values) {
 	            var batchBlob = values[0].blob;
-	            docToAttachTo.item.set({ 'file:content': batchBlob });
-	            return docToAttachTo.item.save({ schemas: ['dublincore', 'file'] });
+	            node.item.set({ 'file:content': batchBlob });
+	            return node.item.save({ schemas: ['dublincore', 'file'] });
 	        }).then(success);
 	    },
 	    getUser: function getUser(username) {
@@ -45559,7 +45559,7 @@
 
 	        setTimeout(function () {
 	            dispatch(clearErrors());
-	        }, 1500);
+	        }, 3000);
 	    };
 	}
 
@@ -56491,7 +56491,52 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
+	});
+
+	var _reactRedux = __webpack_require__(233);
+
+	var _error_actions = __webpack_require__(266);
+
+	var _errors_component = __webpack_require__(273);
+
+	var _errors_component2 = _interopRequireDefault(_errors_component);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var mapStateToProps = function mapStateToProps(_ref) {
+	    var errors = _ref.errors;
+	    return {
+	        errors: errors
+	    };
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	    return {
+	        receiveErrors: function receiveErrors(errors) {
+	            return dispatch((0, _error_actions.receiveErrors)(errors));
+	        },
+	        clearErrors: function clearErrors() {
+	            return dispatch((0, _error_actions.clearErrors)());
+	        },
+	        flashErrors: function flashErrors(errors) {
+	            return dispatch((0, _error_actions.flashErrors)(errors));
+	        }
+	    };
+	};
+
+	var ErrorContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_errors_component2.default);
+
+	exports.default = ErrorContainer;
+
+/***/ },
+/* 273 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -56500,16 +56545,6 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _document_store = __webpack_require__(264);
-
-	var _document_store2 = _interopRequireDefault(_document_store);
-
-	var _file_tree = __webpack_require__(287);
-
-	var _file_tree2 = _interopRequireDefault(_file_tree);
-
-	var _document_view_container = __webpack_require__(290);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -56517,80 +56552,47 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	// store
 
-	// components
+	var ErrorsComponent = function (_React$Component) {
+	    _inherits(ErrorsComponent, _React$Component);
 
-	//containers
+	    function ErrorsComponent(props) {
+	        _classCallCheck(this, ErrorsComponent);
 
-
-	var MainView = function (_React$Component) {
-	  _inherits(MainView, _React$Component);
-
-	  function MainView(props) {
-	    _classCallCheck(this, MainView);
-
-	    var _this = _possibleConstructorReturn(this, (MainView.__proto__ || Object.getPrototypeOf(MainView)).call(this, props));
-
-	    _this.state = {
-	      user: _document_store2.default.getUser()
-	    };
-	    return _this;
-	  }
-
-	  _createClass(MainView, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.props.setRootNode();
+	        return _possibleConstructorReturn(this, (ErrorsComponent.__proto__ || Object.getPrototypeOf(ErrorsComponent)).call(this, props));
 	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var tree = void 0;
-	      var workingNode = void 0;
-	      var currentNode = this.props.fileTree.currentNode;
-	      if (this.props.fileTree.root.item) {
-	        tree = _react2.default.createElement(_file_tree2.default, {
-	          node: this.props.fileTree.root,
-	          setCurrentNode: this.props.setCurrentNode,
-	          currentNode: currentNode,
-	          dispatch: this.props.dispatch
-	        });
-	      }
 
-	      if (currentNode.item) {
-	        workingNode = _react2.default.createElement(_document_view_container.DocumentViewContainers.RightMainViewContainer, null);
-	      }
+	    _createClass(ErrorsComponent, [{
+	        key: "render",
+	        value: function render() {
 
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'main-wrapper' },
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'side-panel-wrapper' },
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'side-panel-profile' },
-	            this.state.user.id
-	          ),
-	          tree
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'right-main-view-wrapper' },
-	          workingNode
-	        )
-	      );
-	    }
-	  }]);
+	            var errors = void 0;
+	            if (this.props.errors.length > 0) {
+	                errors = this.props.errors[0].message;
+	            }
 
-	  return MainView;
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "main-wrapper" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "error-messages" },
+	                    errors
+	                ),
+	                this.props.children
+	            );
+	        }
+	    }]);
+
+	    return ErrorsComponent;
 	}(_react2.default.Component);
 
-	exports.default = MainView;
+	;
+
+	exports.default = ErrorsComponent;
 
 /***/ },
-/* 273 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56598,16 +56600,135 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.ADD_CHILD_NODES = exports.SET_ROOT_NODE = exports.SET_CURRENT_NODE = undefined;
+	exports.EditDocumentContainer = exports.AttachFileContainer = exports.ShowWorkFlowContainer = exports.ShowTaskContainer = exports.ShowAuditContainer = exports.ShowACLContainer = exports.CreateDocumentFormContainer = exports.FileTreeContainer = exports.FolderViewContainer = exports.FileViewContainer = exports.RightMainViewContainer = exports.MainViewContainer = undefined;
+
+	var _reactRedux = __webpack_require__(233);
+
+	var _tree_actions = __webpack_require__(275);
+
+	var _error_actions = __webpack_require__(266);
+
+	var _file_tree = __webpack_require__(277);
+
+	var _file_tree2 = _interopRequireDefault(_file_tree);
+
+	var _main_view = __webpack_require__(279);
+
+	var _main_view2 = _interopRequireDefault(_main_view);
+
+	var _right_main_view = __webpack_require__(280);
+
+	var _right_main_view2 = _interopRequireDefault(_right_main_view);
+
+	var _file_view = __webpack_require__(288);
+
+	var _file_view2 = _interopRequireDefault(_file_view);
+
+	var _folder_view = __webpack_require__(289);
+
+	var _folder_view2 = _interopRequireDefault(_folder_view);
+
+	var _create_document_form = __webpack_require__(281);
+
+	var _create_document_form2 = _interopRequireDefault(_create_document_form);
+
+	var _show_acl = __webpack_require__(282);
+
+	var _show_acl2 = _interopRequireDefault(_show_acl);
+
+	var _show_audit = __webpack_require__(283);
+
+	var _show_audit2 = _interopRequireDefault(_show_audit);
+
+	var _show_task = __webpack_require__(284);
+
+	var _show_task2 = _interopRequireDefault(_show_task);
+
+	var _show_workflow = __webpack_require__(285);
+
+	var _show_workflow2 = _interopRequireDefault(_show_workflow);
+
+	var _attach_file = __webpack_require__(286);
+
+	var _attach_file2 = _interopRequireDefault(_attach_file);
+
+	var _edit_document = __webpack_require__(287);
+
+	var _edit_document2 = _interopRequireDefault(_edit_document);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var mapStateToProps = function mapStateToProps(_ref) {
+	    var fileTree = _ref.fileTree;
+	    return {
+	        fileTree: fileTree
+	    };
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(_dispatch) {
+	    return {
+	        setCurrentNode: function setCurrentNode(node) {
+	            return _dispatch((0, _tree_actions.setCurrentNode)(node));
+	        },
+	        flashErrors: function flashErrors(errors) {
+	            return _dispatch((0, _error_actions.flashErrors)(errors));
+	        },
+	        setRootNode: function setRootNode(rootNode) {
+	            return _dispatch((0, _tree_actions.setRootNode)(rootNode));
+	        },
+	        fetchChildren: function fetchChildren(parentNode) {
+	            return _dispatch((0, _tree_actions.fetchChildren)(parentNode));
+	        },
+	        deleteDocument: function deleteDocument(node, callback) {
+	            return _dispatch((0, _tree_actions.deleteDocument)(node, callback));
+	        },
+	        createDocument: function createDocument(parentNode, doc, callback) {
+	            return _dispatch((0, _tree_actions.createDocument)(parentNode, doc, callback));
+	        },
+	        attachFile: function attachFile(node, upload) {
+	            return _dispatch((0, _tree_actions.attachFile)(node, upload));
+	        },
+	        dispatch: function dispatch(action) {
+	            return _dispatch(action);
+	        }
+	    };
+	};
+
+	var MainViewContainer = exports.MainViewContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_main_view2.default);
+	var RightMainViewContainer = exports.RightMainViewContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_right_main_view2.default);
+	var FileViewContainer = exports.FileViewContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_file_view2.default);
+	var FolderViewContainer = exports.FolderViewContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_folder_view2.default);
+	var FileTreeContainer = exports.FileTreeContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_file_tree2.default);
+	var CreateDocumentFormContainer = exports.CreateDocumentFormContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_create_document_form2.default);
+	var ShowACLContainer = exports.ShowACLContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_show_acl2.default);
+	var ShowAuditContainer = exports.ShowAuditContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_show_audit2.default);
+	var ShowTaskContainer = exports.ShowTaskContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_show_task2.default);
+	var ShowWorkFlowContainer = exports.ShowWorkFlowContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_show_workflow2.default);
+	var AttachFileContainer = exports.AttachFileContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_attach_file2.default);
+	var EditDocumentContainer = exports.EditDocumentContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_edit_document2.default);
+
+/***/ },
+/* 275 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.ATTACH_FILE = exports.CREATE_NODE = exports.DELETE_NODE = exports.ADD_CHILD_NODES = exports.SET_ROOT_NODE = exports.SET_CURRENT_NODE = undefined;
 	exports.setCurrentNode = setCurrentNode;
 	exports.setRootNode = setRootNode;
 	exports.fetchChildren = fetchChildren;
+	exports.deleteDocument = deleteDocument;
+	exports.createDocument = createDocument;
+	exports.attachFile = attachFile;
 
 	var _nuxeo_utils = __webpack_require__(262);
 
 	var _nuxeo_utils2 = _interopRequireDefault(_nuxeo_utils);
 
-	var _tree_node = __webpack_require__(297);
+	var _tree_node = __webpack_require__(276);
 
 	var _tree_node2 = _interopRequireDefault(_tree_node);
 
@@ -56620,6 +56741,9 @@
 	var SET_CURRENT_NODE = exports.SET_CURRENT_NODE = "SET_CURRENT_NODE";
 	var SET_ROOT_NODE = exports.SET_ROOT_NODE = "SET_ROOT_NODE";
 	var ADD_CHILD_NODES = exports.ADD_CHILD_NODES = "ADD_CHILD_NODES";
+	var DELETE_NODE = exports.DELETE_NODE = "DELETE_NODE";
+	var CREATE_NODE = exports.CREATE_NODE = "CREATE_NODE";
+	var ATTACH_FILE = exports.ATTACH_FILE = "ATTACH_FILE";
 
 	function setCurrentNode(node) {
 	    return {
@@ -56660,34 +56784,63 @@
 	    };
 	}
 
-	var TreeActions = {
-	    deleteDocument: function deleteDocument(node) {
-	        var path = node.item.uid;
-	        var success = function success(doc) {
-	            _document_store2.default.deleteChild(node.parent, node);
-	        };
+	function deleteDocument(node, callback) {
+	    return function (dispatch) {
 	        _nuxeo_utils2.default.crudUtil({
 	            method: "delete",
-	            path: path,
-	            success: success
+	            path: node.item.uid,
+	            success: function success(doc) {
+	                dispatch({
+	                    type: DELETE_NODE,
+	                    node: node
+	                });
+	                if (callback) {
+	                    callback();
+	                }
+	            }
 	        });
-	    },
-	    createDocument: function createDocument(node, doc, success) {
-	        var finalDoc = {
-	            "entity-type": "document",
-	            "name": '' + doc.title,
-	            "type": '' + doc.type
-	        };
+	    };
+	}
 
-	        var path = node.item.uid;
+	function createDocument(parentNode, doc, callback) {
+	    return function (dispatch) {
 	        _nuxeo_utils2.default.crudUtil({
 	            method: "create",
-	            path: path,
-	            data: finalDoc,
-	            success: success
-
+	            path: parentNode.item.uid,
+	            data: doc,
+	            success: function success(doc) {
+	                var childNode = new _tree_node2.default(doc);
+	                dispatch({
+	                    type: CREATE_NODE,
+	                    parentNode: parentNode,
+	                    childNode: childNode
+	                });
+	                dispatch(setCurrentNode(parentNode));
+	                if (callback) {
+	                    callback();
+	                }
+	            }
 	        });
-	    },
+	    };
+	}
+
+	function attachFile(node, upload, callback) {
+	    return function (dispatch) {
+	        var success = function success(newDoc) {
+	            dispatch({
+	                type: ATTACH_FILE,
+	                node: node,
+	                newDoc: newDoc
+	            });
+	            if (callback) {
+	                callback();
+	            }
+	        };
+	        _nuxeo_utils2.default.attachFile(node, upload, success);
+	    };
+	}
+
+	var TreeActions = {
 	    editDocument: function editDocument(node, doc) {
 	        var success = function success(doc) {};
 	        var path = node.item.uid;
@@ -56726,543 +56879,7 @@
 	exports.default = TreeActions;
 
 /***/ },
-/* 274 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	var _create_document_form = __webpack_require__(277);
-
-	var _create_document_form2 = _interopRequireDefault(_create_document_form);
-
-	var _show_acl = __webpack_require__(279);
-
-	var _show_acl2 = _interopRequireDefault(_show_acl);
-
-	var _show_audit = __webpack_require__(280);
-
-	var _show_audit2 = _interopRequireDefault(_show_audit);
-
-	var _show_task = __webpack_require__(281);
-
-	var _show_task2 = _interopRequireDefault(_show_task);
-
-	var _show_workflow = __webpack_require__(282);
-
-	var _show_workflow2 = _interopRequireDefault(_show_workflow);
-
-	var _attach_file = __webpack_require__(285);
-
-	var _attach_file2 = _interopRequireDefault(_attach_file);
-
-	var _edit_document = __webpack_require__(286);
-
-	var _edit_document2 = _interopRequireDefault(_edit_document);
-
-	var _document_type_constants = __webpack_require__(278);
-
-	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
-
-	var _document_view_container = __webpack_require__(290);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var workingButtons = {
-	  "Create Document": _create_document_form2.default,
-	  "ACL": _show_acl2.default,
-	  "Work Flow": _show_workflow2.default,
-	  "Tasks": _show_task2.default,
-	  "Audit": _show_audit2.default,
-	  "Attach File": _attach_file2.default,
-	  "Edit": _edit_document2.default
-	};
-
-	var showWorkingButtons = ['ACL', 'Work Flow', 'Tasks', 'Audit', 'Edit'];
-
-	var containers = _document_type_constants2.default.containers.concat(_document_type_constants2.default.defaultContainers);
-
-	var RightMainView = function (_React$Component) {
-	  _inherits(RightMainView, _React$Component);
-
-	  function RightMainView(props) {
-	    _classCallCheck(this, RightMainView);
-
-	    var _this = _possibleConstructorReturn(this, (RightMainView.__proto__ || Object.getPrototypeOf(RightMainView)).call(this, props));
-
-	    _this.state = {
-	      showWorkingButton: undefined
-	    };
-	    return _this;
-	  }
-
-	  _createClass(RightMainView, [{
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(newProps) {
-	      if (newProps.workingNode != this.props.workingNode) {
-	        this.setState({ showWorkingButton: undefined });
-	      }
-	    }
-	  }, {
-	    key: '_deleteCurrentFile',
-	    value: function _deleteCurrentFile(node, e) {
-	      e.preventDefault();
-	      _tree_actions2.default.setWorkingNode(node.parent);
-	      _tree_actions2.default.deleteDocument(node);
-	    }
-	  }, {
-	    key: '_setWorkingButton',
-	    value: function _setWorkingButton(buttonText, e) {
-	      if (this.state.showWorkingButton === buttonText) {
-	        this.setState({ showWorkingButton: undefined });
-	      } else {
-	        this.setState({ showWorkingButton: buttonText });
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _this2 = this;
-
-	      var currentNode = this.props.fileTree.currentNode;
-	      var fileProperties = currentNode.item.properties;
-	      var propertiesList = _react2.default.createElement(
-	        'div',
-	        null,
-	        'Creator : ',
-	        fileProperties["dc:creator"],
-	        ' ',
-	        _react2.default.createElement('br', null),
-	        'Last Contributor : ',
-	        fileProperties["dc:lastContributor"],
-	        ' ',
-	        _react2.default.createElement('br', null),
-	        'Created At : ',
-	        new Date(fileProperties["dc:created"]).toString(),
-	        ' ',
-	        _react2.default.createElement('br', null),
-	        'Modified At : ',
-	        new Date(fileProperties["dc:modified"]).toString()
-	      );
-
-	      var buttonList = showWorkingButtons.map(function (button) {
-	        return _react2.default.createElement(
-	          'button',
-	          { key: button, onClick: _this2._setWorkingButton.bind(_this2, '' + button), className: 'submit-button' },
-	          '' + button
-	        );
-	      });
-
-	      var showWorking = void 0;
-
-	      if (this.state.showWorkingButton) {
-	        var props = {
-	          current: currentNode,
-	          _setWorkingButton: this._setWorkingButton
-	        };
-	        showWorking = _react2.default.createElement(workingButtons[this.state.showWorkingButton], props);
-	      }
-
-	      var title = fileProperties['dc:title'];
-
-	      var fileOrFolderView = void 0;
-	      var attachFileOrCreate = void 0;
-	      if (containers.includes(currentNode.item.type)) {
-	        attachFileOrCreate = _react2.default.createElement(
-	          'button',
-	          { onClick: this._setWorkingButton.bind(this, "Create Document"), className: 'submit-button' },
-	          'Create Document'
-	        );
-	        fileOrFolderView = _react2.default.createElement(_document_view_container.DocumentViewContainers.FolderViewContainer, null);
-	      } else {
-	        attachFileOrCreate = _react2.default.createElement(
-	          'button',
-	          { onClick: this._setWorkingButton.bind(this, "Attach File"), className: 'submit-button' },
-	          'Attach File'
-	        );
-	        fileOrFolderView = _react2.default.createElement(_document_view_container.DocumentViewContainers.FileViewContainer, null);
-	      }
-
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          'h2',
-	          null,
-	          'Title: ',
-	          title
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'right-main-view-button-wrapper' },
-	          attachFileOrCreate,
-	          buttonList,
-	          _react2.default.createElement(
-	            'button',
-	            { onClick: this._deleteCurrentFile.bind(this, currentNode), className: 'submit-button delete-button' },
-	            'Delete Current'
-	          )
-	        ),
-	        showWorking,
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'right-main-view-properties' },
-	          propertiesList
-	        ),
-	        fileOrFolderView
-	      );
-	    }
-	  }]);
-
-	  return RightMainView;
-	}(_react2.default.Component);
-
-	exports.default = RightMainView;
-
-/***/ },
-/* 275 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var FileView = function (_React$Component) {
-	    _inherits(FileView, _React$Component);
-
-	    function FileView(props) {
-	        _classCallCheck(this, FileView);
-
-	        return _possibleConstructorReturn(this, (FileView.__proto__ || Object.getPrototypeOf(FileView)).call(this, props));
-	    }
-
-	    _createClass(FileView, [{
-	        key: "render",
-	        value: function render() {
-	            var node = this.props.fileTree.currentNode;
-	            var content = node.item.properties["file:content"];
-	            var embedded = void 0;
-	            if (content) {
-	                embedded = _react2.default.createElement(
-	                    "div",
-	                    null,
-	                    _react2.default.createElement(
-	                        "h3",
-	                        null,
-	                        content["name"]
-	                    ),
-	                    _react2.default.createElement("embed", { src: content["data"], type: content["mime-type"], className: "upload-preview-embed" }),
-	                    _react2.default.createElement(
-	                        "a",
-	                        { href: content["data"], download: true },
-	                        "Download Link"
-	                    )
-	                );
-	            }
-
-	            return _react2.default.createElement(
-	                "div",
-	                { className: "file-view-wrapper" },
-	                _react2.default.createElement(
-	                    "h3",
-	                    null,
-	                    "Attachments"
-	                ),
-	                _react2.default.createElement(
-	                    "ul",
-	                    null,
-	                    embedded
-	                )
-	            );
-	        }
-	    }]);
-
-	    return FileView;
-	}(_react2.default.Component);
-
-	module.exports = FileView;
-
-/***/ },
 /* 276 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var FolderView = function (_React$Component) {
-	    _inherits(FolderView, _React$Component);
-
-	    function FolderView(props) {
-	        _classCallCheck(this, FolderView);
-
-	        return _possibleConstructorReturn(this, (FolderView.__proto__ || Object.getPrototypeOf(FolderView)).call(this, props));
-	    }
-
-	    _createClass(FolderView, [{
-	        key: '_deleteFile',
-	        value: function _deleteFile(node, e) {
-	            e.preventDefault();
-	            _tree_actions2.default.deleteDocument(node);
-	        }
-	    }, {
-	        key: '_setWorkingFile',
-	        value: function _setWorkingFile(node, e) {
-	            e.preventDefault();
-	            node.parent.showChildren = true;
-	            node.showChildren = true;
-	            this.props.setCurrentNode(node);
-	            this.props.fetchChildren(node);
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            var _this2 = this;
-
-	            var node = this.props.fileTree.currentNode;
-	            var fileProperties = node.item.properties;
-	            var childNodes = node.children;
-	            var list = Object.keys(childNodes).map(function (id) {
-	                return _react2.default.createElement(
-	                    'li',
-	                    { key: id, className: 'file-view-list-item' },
-	                    _react2.default.createElement(
-	                        'button',
-	                        { onClick: _this2._deleteFile.bind(null, childNodes[id]), className: 'submit-button delete-button' },
-	                        'Delete'
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { onClick: _this2._setWorkingFile.bind(_this2, childNodes[id]) },
-	                        childNodes[id].item.title
-	                    )
-	                );
-	            });
-
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'file-view-wrapper' },
-	                _react2.default.createElement(
-	                    'h3',
-	                    null,
-	                    'Sub-files & Folders'
-	                ),
-	                _react2.default.createElement(
-	                    'ul',
-	                    null,
-	                    list
-	                )
-	            );
-	        }
-	    }]);
-
-	    return FolderView;
-	}(_react2.default.Component);
-
-	module.exports = FolderView;
-
-/***/ },
-/* 277 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	var _document_type_constants = __webpack_require__(278);
-
-	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
-
-	var _document_store = __webpack_require__(264);
-
-	var _document_store2 = _interopRequireDefault(_document_store);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var containers = _document_type_constants2.default.containers;
-	var documents = _document_type_constants2.default.documents;
-
-	var CreateDocument = function (_React$Component) {
-	    _inherits(CreateDocument, _React$Component);
-
-	    function CreateDocument(props) {
-	        _classCallCheck(this, CreateDocument);
-
-	        var _this = _possibleConstructorReturn(this, (CreateDocument.__proto__ || Object.getPrototypeOf(CreateDocument)).call(this, props));
-
-	        _this.state = {
-	            title: "",
-	            description: "",
-	            type: "Workspace",
-	            activeType: "Workspace"
-	        };
-	        return _this;
-	    }
-
-	    _createClass(CreateDocument, [{
-	        key: '_handleChange',
-	        value: function _handleChange(field) {
-	            var _this2 = this;
-
-	            return function (e) {
-	                _this2.setState(_defineProperty({}, field, e.target.value));
-	            };
-	        }
-	    }, {
-	        key: '_changeDocumentType',
-	        value: function _changeDocumentType(type, e) {
-	            this.setState({ type: type });
-	        }
-	    }, {
-	        key: '_handleSubmit',
-	        value: function _handleSubmit(e) {
-	            var _this3 = this;
-
-	            var parentNode = this.props.fileTree.currentNode;
-	            e.preventDefault();
-	            var success = function success(res) {
-	                _document_store2.default.addChild(parentNode, res);
-	                _this3.setState({ title: "", description: "" });
-	            };
-	            _tree_actions2.default.createDocument(parentNode, this.state, success);
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            var _this4 = this;
-
-	            var createCollaborativeWorkspaces = containers.map(function (type) {
-	                return _react2.default.createElement(
-	                    'button',
-	                    { className: 'create-document-button', key: type, onClick: _this4._changeDocumentType.bind(_this4, type) },
-	                    type
-	                );
-	            });
-
-	            var createDocuments = documents.map(function (type) {
-	                return _react2.default.createElement(
-	                    'button',
-	                    { className: 'create-document-button', key: type, onClick: _this4._changeDocumentType.bind(_this4, type) },
-	                    type
-	                );
-	            });
-
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'right-main-view-show-working-button' },
-	                _react2.default.createElement(
-	                    'div',
-	                    { className: 'create-document-button-wrapper' },
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'create-document-button-divider' },
-	                        _react2.default.createElement(
-	                            'h4',
-	                            null,
-	                            'Collaborative Spaces'
-	                        ),
-	                        createCollaborativeWorkspaces
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'create-document-button-divider' },
-	                        _react2.default.createElement(
-	                            'h4',
-	                            null,
-	                            'Documents'
-	                        ),
-	                        createDocuments
-	                    )
-	                ),
-	                _react2.default.createElement(
-	                    'h4',
-	                    null,
-	                    'Create ',
-	                    this.state.type
-	                ),
-	                _react2.default.createElement(
-	                    'form',
-	                    { onSubmit: this._handleSubmit.bind(this), className: 'create-document-form' },
-	                    'Title:',
-	                    _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("title"), value: this.state.title }),
-	                    'Description:',
-	                    _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("description"), value: this.state.description }),
-	                    _react2.default.createElement('input', { className: 'create-document-button', type: 'submit', value: 'Create Document' })
-	                )
-	            );
-	        }
-	    }]);
-
-	    return CreateDocument;
-	}(_react2.default.Component);
-
-	module.exports = CreateDocument;
-
-/***/ },
-/* 278 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -57270,526 +56887,57 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var DocumentTypeConstants = {
-	    defaultContainers: ["Root", "Domain", "WorkspaceRoot", "SectionRoot", "TemplateRoot"],
-	    containers: ["Workspace", "Folder", "Forum", "Collection", "OrderedFolder"],
-	    documents: ["WebTemplateSource", "Project", "Template", "Picture", "Video", "Portfolio", "Note", "Audio", "File"]
-	};
-
-	exports.default = DocumentTypeConstants;
-
-/***/ },
-/* 279 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	var TreeNode = function () {
+	    function TreeNode(item) {
+	        _classCallCheck(this, TreeNode);
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ShowACL = function (_React$Component) {
-	    _inherits(ShowACL, _React$Component);
-
-	    function ShowACL(props) {
-	        _classCallCheck(this, ShowACL);
-
-	        var _this = _possibleConstructorReturn(this, (ShowACL.__proto__ || Object.getPrototypeOf(ShowACL)).call(this, props));
-
-	        _tree_actions2.default.getacl(_this.props.workingNode);
-	        return _this;
+	        this.item = item;
+	        this.uid = item.uid;
+	        this.parent = undefined;
+	        this.showChildren = false;
+	        //adapter parameters
+	        this.children = {};
+	        this.acl = undefined;
+	        this.workflow = undefined;
+	        this.audit = undefined;
+	        this.task = undefined;
+	        this.blob = undefined;
+	        this.rendition = undefined;
 	    }
 
-	    _createClass(ShowACL, [{
-	        key: 'render',
-	        value: function render() {
-	            var node = this.props.workingNode;
-	            var aclList = void 0;
-	            if (node.acl) {
-	                aclList = node.acl.acl[0].ace.map(function (el, index) {
-	                    return _react2.default.createElement(
-	                        'li',
-	                        { key: index },
-	                        el.username,
-	                        ' : ',
-	                        el.permission
-	                    );
-	                });
+	    _createClass(TreeNode, [{
+	        key: "setParent",
+	        value: function setParent(node) {
+	            if (this.parent) {
+	                this.parent.removeChild(this);
 	            }
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'right-main-view-show-working-button' },
-	                _react2.default.createElement(
-	                    'ul',
-	                    null,
-	                    aclList
-	                )
-	            );
-	        }
-	    }]);
-
-	    return ShowACL;
-	}(_react2.default.Component);
-
-	module.exports = ShowACL;
-
-/***/ },
-/* 280 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ShowAudit = function (_React$Component) {
-	    _inherits(ShowAudit, _React$Component);
-
-	    function ShowAudit(props) {
-	        _classCallCheck(this, ShowAudit);
-
-	        var _this = _possibleConstructorReturn(this, (ShowAudit.__proto__ || Object.getPrototypeOf(ShowAudit)).call(this, props));
-
-	        _tree_actions2.default.getaudit(_this.props.workingNode);
-	        return _this;
-	    }
-
-	    _createClass(ShowAudit, [{
-	        key: 'render',
-	        value: function render() {
-	            var node = this.props.workingNode;
-	            var auditList = void 0;
-	            if (node.audit) {
-	                auditList = node.audit.entries.map(function (el, index) {
-	                    return _react2.default.createElement(
-	                        'li',
-	                        { key: el.id },
-	                        'Event Date : ',
-	                        new Date(el.eventDate).toString(),
-	                        ' ',
-	                        _react2.default.createElement('br', null),
-	                        'Log Date : ',
-	                        new Date(el.logDate).toString(),
-	                        ' ',
-	                        _react2.default.createElement('br', null),
-	                        'Principal Name : ',
-	                        el.principalName,
-	                        ' ',
-	                        _react2.default.createElement('br', null),
-	                        'Event ID : ',
-	                        el.eventId,
-	                        ' ',
-	                        _react2.default.createElement('br', null),
-	                        'comment : ',
-	                        el.comment,
-	                        ' ',
-	                        _react2.default.createElement('br', null),
-	                        _react2.default.createElement('br', null)
-	                    );
-	                });
-	            }
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'right-main-view-show-working-button' },
-	                _react2.default.createElement(
-	                    'ul',
-	                    null,
-	                    auditList
-	                )
-	            );
-	        }
-	    }]);
-
-	    return ShowAudit;
-	}(_react2.default.Component);
-
-	module.exports = ShowAudit;
-
-/***/ },
-/* 281 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ShowTask = function (_React$Component) {
-	    _inherits(ShowTask, _React$Component);
-
-	    function ShowTask(props) {
-	        _classCallCheck(this, ShowTask);
-
-	        var _this = _possibleConstructorReturn(this, (ShowTask.__proto__ || Object.getPrototypeOf(ShowTask)).call(this, props));
-
-	        _tree_actions2.default.gettask(_this.props.workingNode);
-	        return _this;
-	    }
-
-	    _createClass(ShowTask, [{
-	        key: 'render',
-	        value: function render() {
-	            var node = this.props.workingNode;
-	            var string = JSON.stringify(node.task);
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'right-main-view-show-working-button' },
-	                string
-	            );
-	        }
-	    }]);
-
-	    return ShowTask;
-	}(_react2.default.Component);
-
-	module.exports = ShowTask;
-
-/***/ },
-/* 282 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ShowWorkFlow = function (_React$Component) {
-	    _inherits(ShowWorkFlow, _React$Component);
-
-	    function ShowWorkFlow(props) {
-	        _classCallCheck(this, ShowWorkFlow);
-
-	        var _this = _possibleConstructorReturn(this, (ShowWorkFlow.__proto__ || Object.getPrototypeOf(ShowWorkFlow)).call(this, props));
-
-	        _tree_actions2.default.getworkflow(_this.props.workingNode);
-	        return _this;
-	    }
-
-	    _createClass(ShowWorkFlow, [{
-	        key: 'render',
-	        value: function render() {
-	            var node = this.props.workingNode;
-	            var string = JSON.stringify(node.workflow);
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'right-main-view-show-working-button' },
-	                string
-	            );
-	        }
-	    }]);
-
-	    return ShowWorkFlow;
-	}(_react2.default.Component);
-
-	module.exports = ShowWorkFlow;
-
-/***/ },
-/* 283 */,
-/* 284 */,
-/* 285 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	var _nuxeo_utils = __webpack_require__(262);
-
-	var _nuxeo_utils2 = _interopRequireDefault(_nuxeo_utils);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var AttachFile = function (_React$Component) {
-	  _inherits(AttachFile, _React$Component);
-
-	  function AttachFile(props) {
-	    _classCallCheck(this, AttachFile);
-
-	    var _this = _possibleConstructorReturn(this, (AttachFile.__proto__ || Object.getPrototypeOf(AttachFile)).call(this, props));
-
-	    _this.state = {
-	      title: "",
-	      description: "",
-	      type: "File",
-	      fileUrl: "",
-	      file: undefined
-	    };
-	    return _this;
-	  }
-
-	  _createClass(AttachFile, [{
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(newProps) {
-	      this.setState({
-	        title: "",
-	        description: "",
-	        type: "File",
-	        fileUrl: "",
-	        file: undefined
-	      });
-	    }
-	  }, {
-	    key: '_handleChange',
-	    value: function _handleChange(field) {
-	      var _this2 = this;
-
-	      return function (e) {
-	        _this2.setState(_defineProperty({}, field, e.target.value));
-	      };
-	    }
-	  }, {
-	    key: '_previewFile',
-	    value: function _previewFile(e) {
-	      var _this3 = this;
-
-	      var file = e.currentTarget.files[0];
-	      var fileReader = new FileReader();
-	      fileReader.onloadend = function () {
-	        _this3.setState({ file: file, fileUrl: fileReader.result });
-	      };
-	      if (file) {
-	        fileReader.readAsDataURL(file);
-	      } else {
-	        this.setState({ fileUrl: "", file: undefined });
-	      }
-	    }
-	  }, {
-	    key: '_handleSubmit',
-	    value: function _handleSubmit(e) {
-	      e.preventDefault();
-	      // let formData = new FormData();
-	      // formData.append("doc[title]", this.state.title);
-	      // formData.append("doc[nuxeo-entity]", this.state.file);
-	      // formData.append("doc[description]", this.state.description);
-	      _tree_actions2.default.attachFile(this.props.workingNode, this.state);
-	      this.setState({
-	        title: "",
-	        description: "",
-	        type: "File",
-	        fileUrl: "",
-	        file: undefined
-	      });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var button = _react2.default.createElement('input', { className: 'button-form', type: 'submit', value: 'Upload' });
-	      var submit = this._handleSubmit.bind(this);
-	      var preview = this._previewFile.bind(this);
-
-	      var embedded = void 0;
-	      if (this.state.file) {
-	        embedded = _react2.default.createElement('embed', { src: this.state.fileUrl, type: this.state.file.type, className: 'upload-preview-embed' });
-	      }
-
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'right-main-view-show-working-button' },
-	        _react2.default.createElement(
-	          'h3',
-	          null,
-	          'Attach File'
-	        ),
-	        _react2.default.createElement(
-	          'form',
-	          { onSubmit: submit, className: 'attach-file-form' },
-	          'Title:',
-	          _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("title"), value: this.state.title }),
-	          'Description:',
-	          _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("description"), value: this.state.description }),
-	          _react2.default.createElement('br', null),
-	          'File:',
-	          _react2.default.createElement('input', { className: 'submit-button submit-button-upload', type: 'file', onChange: preview }),
-	          _react2.default.createElement('br', null),
-	          _react2.default.createElement('input', { className: 'submit-button', type: 'submit', value: 'Attach File' }),
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'upload-preview' },
-	            embedded
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return AttachFile;
-	}(_react2.default.Component);
-
-	module.exports = AttachFile;
-
-/***/ },
-/* 286 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var EditDocument = function (_React$Component) {
-	    _inherits(EditDocument, _React$Component);
-
-	    function EditDocument(props) {
-	        _classCallCheck(this, EditDocument);
-
-	        var _this = _possibleConstructorReturn(this, (EditDocument.__proto__ || Object.getPrototypeOf(EditDocument)).call(this, props));
-
-	        _this.state = {
-	            title: '' + _this.props.workingNode.item.title,
-	            description: '' + _this.props.workingNode.item.description
-	        };
-	        return _this;
-	    }
-
-	    _createClass(EditDocument, [{
-	        key: '_handleChange',
-	        value: function _handleChange(field) {
-	            var _this2 = this;
-
-	            return function (e) {
-	                _this2.setState(_defineProperty({}, field, e.target.value));
-	            };
+	            this.parent = node;
+	            node.children[this.uid] = this;
 	        }
 	    }, {
-	        key: '_handleSubmit',
-	        value: function _handleSubmit(e) {
-	            e.preventDefault();
-	            var doc = this.props.workingNode.item;
-
-	            // doc.set({ 'dc:title' : this.state.title});
-	            // doc.set({'dc:description': this.state.description});
-
-	            doc.properties['dc:title'] = this.state.title;
-	            doc.properties['dc:description'] = this.state.description;
-	            debugger;
-	            _tree_actions2.default.editDocument(this.props.workingNode, doc);
-	            // this.setState({title:"", description: ""});
+	        key: "removeChild",
+	        value: function removeChild(node) {
+	            delete this.children[node.uid];
 	        }
 	    }, {
-	        key: 'render',
-	        value: function render() {
-
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'right-main-view-show-working-button' },
-	                _react2.default.createElement(
-	                    'h4',
-	                    null,
-	                    'Edit ',
-	                    this.state.type
-	                ),
-	                _react2.default.createElement(
-	                    'form',
-	                    { onSubmit: this._handleSubmit.bind(this), className: 'create-document-form' },
-	                    'Title:',
-	                    _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("title"), value: this.state.title }),
-	                    'Description:',
-	                    _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("description"), value: this.state.description }),
-	                    _react2.default.createElement('input', { className: 'create-document-button', type: 'submit', value: 'Update' })
-	                )
-	            );
+	        key: "addChild",
+	        value: function addChild(node) {
+	            node.setParent(this);
 	        }
 	    }]);
 
-	    return EditDocument;
-	}(_react2.default.Component);
+	    return TreeNode;
+	}();
 
-	module.exports = EditDocument;
+	exports.default = TreeNode;
 
 /***/ },
-/* 287 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57804,7 +56952,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _tree_actions = __webpack_require__(273);
+	var _tree_actions = __webpack_require__(275);
 
 	var _document_type_constants = __webpack_require__(278);
 
@@ -57911,59 +57059,956 @@
 	exports.default = FileTree;
 
 /***/ },
-/* 288 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _reactRedux = __webpack_require__(233);
-
-	var _error_actions = __webpack_require__(266);
-
-	var _errors_component = __webpack_require__(289);
-
-	var _errors_component2 = _interopRequireDefault(_errors_component);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var mapStateToProps = function mapStateToProps(_ref) {
-	    var errors = _ref.errors;
-	    return {
-	        errors: errors
-	    };
-	};
-
-	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	    return {
-	        receiveErrors: function receiveErrors(errors) {
-	            return dispatch((0, _error_actions.receiveErrors)(errors));
-	        },
-	        clearErrors: function clearErrors() {
-	            return dispatch((0, _error_actions.clearErrors)());
-	        },
-	        flashErrors: function flashErrors(errors) {
-	            return dispatch((0, _error_actions.flashErrors)(errors));
-	        }
-	    };
-	};
-
-	var ErrorContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_errors_component2.default);
-
-	exports.default = ErrorContainer;
-
-/***/ },
-/* 289 */
-/***/ function(module, exports, __webpack_require__) {
+/* 278 */
+/***/ function(module, exports) {
 
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	var DocumentTypeConstants = {
+	    defaultContainers: ["Root", "Domain", "WorkspaceRoot", "SectionRoot", "TemplateRoot"],
+	    containers: ["Workspace", "Folder", "Forum", "Collection", "OrderedFolder"],
+	    documents: ["WebTemplateSource", "Project", "Template", "Picture", "Video", "Portfolio", "Note", "Audio", "File"]
+	};
+
+	exports.default = DocumentTypeConstants;
+
+/***/ },
+/* 279 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _document_store = __webpack_require__(264);
+
+	var _document_store2 = _interopRequireDefault(_document_store);
+
+	var _document_view_container = __webpack_require__(274);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	// store
+
+	// components
+
+
+	//containers
+
+
+	var MainView = function (_React$Component) {
+	  _inherits(MainView, _React$Component);
+
+	  function MainView(props) {
+	    _classCallCheck(this, MainView);
+
+	    var _this = _possibleConstructorReturn(this, (MainView.__proto__ || Object.getPrototypeOf(MainView)).call(this, props));
+
+	    _this.state = {
+	      user: _document_store2.default.getUser()
+	    };
+	    return _this;
+	  }
+
+	  _createClass(MainView, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.props.setRootNode();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var tree = void 0;
+	      var workingNode = void 0;
+	      var currentNode = this.props.fileTree.currentNode;
+	      if (this.props.fileTree.root.item) {
+	        tree = _react2.default.createElement(_document_view_container.FileTreeContainer, {
+	          node: this.props.fileTree.root,
+	          setCurrentNode: this.props.setCurrentNode,
+	          currentNode: currentNode,
+	          dispatch: this.props.dispatch
+	        });
+	      }
+
+	      if (currentNode.item) {
+	        workingNode = _react2.default.createElement(_document_view_container.RightMainViewContainer, null);
+	      }
+
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'main-wrapper' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'side-panel-wrapper' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'side-panel-profile' },
+	            this.state.user.id
+	          ),
+	          tree
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'right-main-view-wrapper' },
+	          workingNode
+	        )
+	      );
+	    }
+	  }]);
+
+	  return MainView;
+	}(_react2.default.Component);
+
+	exports.default = MainView;
+
+/***/ },
+/* 280 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _document_type_constants = __webpack_require__(278);
+
+	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
+
+	var _document_view_container = __webpack_require__(274);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var showWorkingButtons = ['ACL', 'Work Flow', 'Tasks', 'Audit', 'Edit'];
+
+	var containers = _document_type_constants2.default.containers.concat(_document_type_constants2.default.defaultContainers);
+
+	var RightMainView = function (_React$Component) {
+	  _inherits(RightMainView, _React$Component);
+
+	  function RightMainView(props) {
+	    _classCallCheck(this, RightMainView);
+
+	    var _this = _possibleConstructorReturn(this, (RightMainView.__proto__ || Object.getPrototypeOf(RightMainView)).call(this, props));
+
+	    _this.state = {
+	      showWorkingButton: undefined
+	    };
+	    return _this;
+	  }
+
+	  _createClass(RightMainView, [{
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(newProps) {
+	      if (newProps.fileTree.currentNode != this.props.fileTree.currentNode) {
+	        this.setState({ showWorkingButton: undefined });
+	      }
+	    }
+	  }, {
+	    key: '_deleteCurrentFile',
+	    value: function _deleteCurrentFile(node, e) {
+	      var _this2 = this;
+
+	      e.preventDefault();
+	      var callback = function callback() {
+	        _this2.props.setCurrentNode(_this2.props.fileTree.currentNode.parent);
+	      };
+	      this.props.deleteDocument(node, callback);
+	    }
+	  }, {
+	    key: '_setWorkingButton',
+	    value: function _setWorkingButton(buttonText, e) {
+	      if (this.state.showWorkingButton === buttonText) {
+	        this.setState({ showWorkingButton: undefined });
+	      } else {
+	        this.setState({ showWorkingButton: buttonText });
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this3 = this;
+
+	      var workingButtons = {
+	        "Create Document": _document_view_container.CreateDocumentFormContainer,
+	        "ACL": _document_view_container.ShowACLContainer,
+	        "Work Flow": _document_view_container.ShowWorkFlowContainer,
+	        "Tasks": _document_view_container.ShowTaskContainer,
+	        "Audit": _document_view_container.ShowAuditContainer,
+	        "Attach File": _document_view_container.AttachFileContainer,
+	        "Edit": _document_view_container.EditDocumentContainer
+	      };
+
+	      var currentNode = this.props.fileTree.currentNode;
+	      var fileProperties = currentNode.item.properties;
+	      var propertiesList = _react2.default.createElement(
+	        'div',
+	        null,
+	        'Creator : ',
+	        fileProperties["dc:creator"],
+	        ' ',
+	        _react2.default.createElement('br', null),
+	        'Last Contributor : ',
+	        fileProperties["dc:lastContributor"],
+	        ' ',
+	        _react2.default.createElement('br', null),
+	        'Created At : ',
+	        new Date(fileProperties["dc:created"]).toString(),
+	        ' ',
+	        _react2.default.createElement('br', null),
+	        'Modified At : ',
+	        new Date(fileProperties["dc:modified"]).toString()
+	      );
+
+	      var buttonList = showWorkingButtons.map(function (button) {
+	        return _react2.default.createElement(
+	          'button',
+	          { key: button, onClick: _this3._setWorkingButton.bind(_this3, '' + button), className: 'submit-button' },
+	          '' + button
+	        );
+	      });
+
+	      var showWorking = void 0;
+	      if (this.state.showWorkingButton) {
+	        var props = {
+	          currentNode: currentNode,
+	          _setWorkingButton: this._setWorkingButton,
+	          dispatch: this.props.dispatch,
+	          setCurrentNode: this.props.setCurrentNode
+	        };
+	        showWorking = _react2.default.createElement(workingButtons[this.state.showWorkingButton]);
+	      }
+
+	      var title = fileProperties['dc:title'];
+
+	      var fileOrFolderView = void 0;
+	      var attachFileOrCreate = void 0;
+	      if (containers.includes(currentNode.item.type)) {
+	        attachFileOrCreate = _react2.default.createElement(
+	          'button',
+	          { onClick: this._setWorkingButton.bind(this, "Create Document"), className: 'submit-button' },
+	          'Create Document'
+	        );
+	        fileOrFolderView = _react2.default.createElement(_document_view_container.FolderViewContainer, null);
+	      } else {
+	        attachFileOrCreate = _react2.default.createElement(
+	          'button',
+	          { onClick: this._setWorkingButton.bind(this, "Attach File"), className: 'submit-button' },
+	          'Attach File'
+	        );
+	        fileOrFolderView = _react2.default.createElement(_document_view_container.FileViewContainer, null);
+	      }
+
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          'h2',
+	          null,
+	          'Title: ',
+	          title
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'right-main-view-button-wrapper' },
+	          attachFileOrCreate,
+	          buttonList,
+	          _react2.default.createElement(
+	            'button',
+	            { onClick: this._deleteCurrentFile.bind(this, currentNode), className: 'submit-button delete-button' },
+	            'Delete Current'
+	          )
+	        ),
+	        showWorking,
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'right-main-view-properties' },
+	          propertiesList
+	        ),
+	        fileOrFolderView
+	      );
+	    }
+	  }]);
+
+	  return RightMainView;
+	}(_react2.default.Component);
+
+	exports.default = RightMainView;
+
+/***/ },
+/* 281 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _tree_actions = __webpack_require__(275);
+
+	var _document_type_constants = __webpack_require__(278);
+
+	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var containers = _document_type_constants2.default.containers;
+	var documents = _document_type_constants2.default.documents;
+
+	var CreateDocument = function (_React$Component) {
+	    _inherits(CreateDocument, _React$Component);
+
+	    function CreateDocument(props) {
+	        _classCallCheck(this, CreateDocument);
+
+	        var _this = _possibleConstructorReturn(this, (CreateDocument.__proto__ || Object.getPrototypeOf(CreateDocument)).call(this, props));
+
+	        _this.state = {
+	            title: "",
+	            description: "",
+	            type: "Workspace",
+	            activeType: "Workspace"
+	        };
+	        return _this;
+	    }
+
+	    _createClass(CreateDocument, [{
+	        key: '_handleChange',
+	        value: function _handleChange(field) {
+	            var _this2 = this;
+
+	            return function (e) {
+	                _this2.setState(_defineProperty({}, field, e.target.value));
+	            };
+	        }
+	    }, {
+	        key: '_changeDocumentType',
+	        value: function _changeDocumentType(type, e) {
+	            this.setState({ type: type });
+	        }
+	    }, {
+	        key: '_handleSubmit',
+	        value: function _handleSubmit(e) {
+	            e.preventDefault();
+	            var doc = {
+	                'entity-type': 'document',
+	                name: '' + this.state.title,
+	                type: '' + this.state.type,
+	                properties: {
+	                    'dc:title': '' + this.state.title,
+	                    'dc:description': '' + this.state.description
+	                }
+	            };
+	            var parentNode = this.props.fileTree.currentNode;
+	            var callback = this.setState({
+	                title: "",
+	                description: ""
+	            });
+	            this.props.createDocument(parentNode, doc, callback);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this3 = this;
+
+	            var createCollaborativeWorkspaces = containers.map(function (type) {
+	                return _react2.default.createElement(
+	                    'button',
+	                    { className: 'create-document-button', key: type, onClick: _this3._changeDocumentType.bind(_this3, type) },
+	                    type
+	                );
+	            });
+
+	            var createDocuments = documents.map(function (type) {
+	                return _react2.default.createElement(
+	                    'button',
+	                    { className: 'create-document-button', key: type, onClick: _this3._changeDocumentType.bind(_this3, type) },
+	                    type
+	                );
+	            });
+
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'right-main-view-show-working-button' },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'create-document-button-wrapper' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'create-document-button-divider' },
+	                        _react2.default.createElement(
+	                            'h4',
+	                            null,
+	                            'Collaborative Spaces'
+	                        ),
+	                        createCollaborativeWorkspaces
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'create-document-button-divider' },
+	                        _react2.default.createElement(
+	                            'h4',
+	                            null,
+	                            'Documents'
+	                        ),
+	                        createDocuments
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'h4',
+	                    null,
+	                    'Create ',
+	                    this.state.type
+	                ),
+	                _react2.default.createElement(
+	                    'form',
+	                    { onSubmit: this._handleSubmit.bind(this), className: 'create-document-form' },
+	                    'Title:',
+	                    _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("title"), value: this.state.title }),
+	                    'Description:',
+	                    _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("description"), value: this.state.description }),
+	                    _react2.default.createElement('input', { className: 'create-document-button', type: 'submit', value: 'Create Document' })
+	                )
+	            );
+	        }
+	    }]);
+
+	    return CreateDocument;
+	}(_react2.default.Component);
+
+	module.exports = CreateDocument;
+
+/***/ },
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _tree_actions = __webpack_require__(275);
+
+	var _tree_actions2 = _interopRequireDefault(_tree_actions);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ShowACL = function (_React$Component) {
+	    _inherits(ShowACL, _React$Component);
+
+	    function ShowACL(props) {
+	        _classCallCheck(this, ShowACL);
+
+	        var _this = _possibleConstructorReturn(this, (ShowACL.__proto__ || Object.getPrototypeOf(ShowACL)).call(this, props));
+
+	        _tree_actions2.default.getacl(_this.props.currentNode);
+	        return _this;
+	    }
+
+	    _createClass(ShowACL, [{
+	        key: 'render',
+	        value: function render() {
+	            var node = this.props.currentNode;
+	            var aclList = void 0;
+	            if (node.acl) {
+	                aclList = node.acl.acl[0].ace.map(function (el, index) {
+	                    return _react2.default.createElement(
+	                        'li',
+	                        { key: index },
+	                        el.username,
+	                        ' : ',
+	                        el.permission
+	                    );
+	                });
+	            }
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'right-main-view-show-working-button' },
+	                _react2.default.createElement(
+	                    'ul',
+	                    null,
+	                    aclList
+	                )
+	            );
+	        }
+	    }]);
+
+	    return ShowACL;
+	}(_react2.default.Component);
+
+	module.exports = ShowACL;
+
+/***/ },
+/* 283 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _tree_actions = __webpack_require__(275);
+
+	var _tree_actions2 = _interopRequireDefault(_tree_actions);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ShowAudit = function (_React$Component) {
+	    _inherits(ShowAudit, _React$Component);
+
+	    function ShowAudit(props) {
+	        _classCallCheck(this, ShowAudit);
+
+	        var _this = _possibleConstructorReturn(this, (ShowAudit.__proto__ || Object.getPrototypeOf(ShowAudit)).call(this, props));
+
+	        _tree_actions2.default.getaudit(_this.props.currentNode);
+	        return _this;
+	    }
+
+	    _createClass(ShowAudit, [{
+	        key: 'render',
+	        value: function render() {
+	            var node = this.props.workingNode;
+	            var auditList = void 0;
+	            if (node.audit) {
+	                auditList = node.audit.entries.map(function (el, index) {
+	                    return _react2.default.createElement(
+	                        'li',
+	                        { key: el.id },
+	                        'Event Date : ',
+	                        new Date(el.eventDate).toString(),
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        'Log Date : ',
+	                        new Date(el.logDate).toString(),
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        'Principal Name : ',
+	                        el.principalName,
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        'Event ID : ',
+	                        el.eventId,
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        'comment : ',
+	                        el.comment,
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        _react2.default.createElement('br', null)
+	                    );
+	                });
+	            }
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'right-main-view-show-working-button' },
+	                _react2.default.createElement(
+	                    'ul',
+	                    null,
+	                    auditList
+	                )
+	            );
+	        }
+	    }]);
+
+	    return ShowAudit;
+	}(_react2.default.Component);
+
+	module.exports = ShowAudit;
+
+/***/ },
+/* 284 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _tree_actions = __webpack_require__(275);
+
+	var _tree_actions2 = _interopRequireDefault(_tree_actions);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ShowTask = function (_React$Component) {
+	    _inherits(ShowTask, _React$Component);
+
+	    function ShowTask(props) {
+	        _classCallCheck(this, ShowTask);
+
+	        var _this = _possibleConstructorReturn(this, (ShowTask.__proto__ || Object.getPrototypeOf(ShowTask)).call(this, props));
+
+	        _tree_actions2.default.gettask(_this.props.currentNode);
+	        return _this;
+	    }
+
+	    _createClass(ShowTask, [{
+	        key: 'render',
+	        value: function render() {
+	            var node = this.props.currentNode;
+	            var string = JSON.stringify(node.task);
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'right-main-view-show-working-button' },
+	                string
+	            );
+	        }
+	    }]);
+
+	    return ShowTask;
+	}(_react2.default.Component);
+
+	module.exports = ShowTask;
+
+/***/ },
+/* 285 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _tree_actions = __webpack_require__(275);
+
+	var _tree_actions2 = _interopRequireDefault(_tree_actions);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ShowWorkFlow = function (_React$Component) {
+	    _inherits(ShowWorkFlow, _React$Component);
+
+	    function ShowWorkFlow(props) {
+	        _classCallCheck(this, ShowWorkFlow);
+
+	        var _this = _possibleConstructorReturn(this, (ShowWorkFlow.__proto__ || Object.getPrototypeOf(ShowWorkFlow)).call(this, props));
+
+	        _tree_actions2.default.getworkflow(_this.props.currentNode);
+	        return _this;
+	    }
+
+	    _createClass(ShowWorkFlow, [{
+	        key: 'render',
+	        value: function render() {
+	            var node = this.props.currentNode;
+	            var string = JSON.stringify(node.workflow);
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'right-main-view-show-working-button' },
+	                string
+	            );
+	        }
+	    }]);
+
+	    return ShowWorkFlow;
+	}(_react2.default.Component);
+
+	module.exports = ShowWorkFlow;
+
+/***/ },
+/* 286 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _tree_actions = __webpack_require__(275);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var initialState = {
+	  title: "",
+	  description: "",
+	  type: "File",
+	  fileUrl: "",
+	  file: undefined
+	};
+
+	var AttachFile = function (_React$Component) {
+	  _inherits(AttachFile, _React$Component);
+
+	  function AttachFile(props) {
+	    _classCallCheck(this, AttachFile);
+
+	    var _this = _possibleConstructorReturn(this, (AttachFile.__proto__ || Object.getPrototypeOf(AttachFile)).call(this, props));
+
+	    _this.state = initialState;
+	    return _this;
+	  }
+
+	  _createClass(AttachFile, [{
+	    key: '_handleChange',
+	    value: function _handleChange(field) {
+	      var _this2 = this;
+
+	      return function (e) {
+	        _this2.setState(_defineProperty({}, field, e.target.value));
+	      };
+	    }
+	  }, {
+	    key: '_previewFile',
+	    value: function _previewFile(e) {
+	      var _this3 = this;
+
+	      var file = e.currentTarget.files[0];
+	      var fileReader = new FileReader();
+	      fileReader.onloadend = function () {
+	        _this3.setState({ file: file, fileUrl: fileReader.result });
+	      };
+	      if (file) {
+	        fileReader.readAsDataURL(file);
+	      } else {
+	        this.setState({ fileUrl: "", file: undefined });
+	      }
+	    }
+	  }, {
+	    key: '_handleSubmit',
+	    value: function _handleSubmit(e) {
+	      var _this4 = this;
+
+	      e.preventDefault();
+	      var dispatch = this.props.dispatch;
+	      var callback = function callback() {
+	        _this4.setState(initialState);
+	        dispatch(_this4.props.setCurrentNode(_this4.props.currentNode));
+	      };
+	      (0, _tree_actions.attachFile)(this.props.currentNode, this.state, callback)(dispatch);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var submit = this._handleSubmit.bind(this);
+	      var preview = this._previewFile.bind(this);
+	      var embedded = void 0;
+	      if (this.state.file) {
+	        embedded = _react2.default.createElement('embed', { src: this.state.fileUrl, type: this.state.file.type, className: 'upload-preview-embed' });
+	      }
+
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'right-main-view-show-working-button' },
+	        _react2.default.createElement(
+	          'h3',
+	          null,
+	          'Attach File'
+	        ),
+	        _react2.default.createElement(
+	          'form',
+	          { onSubmit: submit, className: 'attach-file-form' },
+	          'Title:',
+	          _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("title"), value: this.state.title }),
+	          'Description:',
+	          _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("description"), value: this.state.description }),
+	          _react2.default.createElement('br', null),
+	          'File:',
+	          _react2.default.createElement('input', { className: 'submit-button submit-button-upload', type: 'file', onChange: preview }),
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement('input', { className: 'submit-button', type: 'submit', value: 'Attach File' }),
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'upload-preview' },
+	            embedded
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return AttachFile;
+	}(_react2.default.Component);
+
+	module.exports = AttachFile;
+
+/***/ },
+/* 287 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _tree_actions = __webpack_require__(275);
+
+	var _tree_actions2 = _interopRequireDefault(_tree_actions);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var EditDocument = function (_React$Component) {
+	    _inherits(EditDocument, _React$Component);
+
+	    function EditDocument(props) {
+	        _classCallCheck(this, EditDocument);
+
+	        var _this = _possibleConstructorReturn(this, (EditDocument.__proto__ || Object.getPrototypeOf(EditDocument)).call(this, props));
+
+	        _this.state = {
+	            title: '' + _this.props.workingNode.item.title,
+	            description: '' + _this.props.workingNode.item.description
+	        };
+	        return _this;
+	    }
+
+	    _createClass(EditDocument, [{
+	        key: '_handleChange',
+	        value: function _handleChange(field) {
+	            var _this2 = this;
+
+	            return function (e) {
+	                _this2.setState(_defineProperty({}, field, e.target.value));
+	            };
+	        }
+	    }, {
+	        key: '_handleSubmit',
+	        value: function _handleSubmit(e) {
+	            e.preventDefault();
+	            var doc = this.props.workingNode.item;
+
+	            // doc.set({ 'dc:title' : this.state.title});
+	            // doc.set({'dc:description': this.state.description});
+
+	            doc.properties['dc:title'] = this.state.title;
+	            doc.properties['dc:description'] = this.state.description;
+	            debugger;
+	            _tree_actions2.default.editDocument(this.props.workingNode, doc);
+	            // this.setState({title:"", description: ""});
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'right-main-view-show-working-button' },
+	                _react2.default.createElement(
+	                    'h4',
+	                    null,
+	                    'Edit ',
+	                    this.state.type
+	                ),
+	                _react2.default.createElement(
+	                    'form',
+	                    { onSubmit: this._handleSubmit.bind(this), className: 'create-document-form' },
+	                    'Title:',
+	                    _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("title"), value: this.state.title }),
+	                    'Description:',
+	                    _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("description"), value: this.state.description }),
+	                    _react2.default.createElement('input', { className: 'create-document-button', type: 'submit', value: 'Update' })
+	                )
+	            );
+	        }
+	    }]);
+
+	    return EditDocument;
+	}(_react2.default.Component);
+
+	module.exports = EditDocument;
+
+/***/ },
+/* 288 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -57979,43 +58024,156 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ErrorsComponent = function (_React$Component) {
-	    _inherits(ErrorsComponent, _React$Component);
+	var FileView = function (_React$Component) {
+	    _inherits(FileView, _React$Component);
 
-	    function ErrorsComponent(props) {
-	        _classCallCheck(this, ErrorsComponent);
+	    function FileView(props) {
+	        _classCallCheck(this, FileView);
 
-	        return _possibleConstructorReturn(this, (ErrorsComponent.__proto__ || Object.getPrototypeOf(ErrorsComponent)).call(this, props));
+	        return _possibleConstructorReturn(this, (FileView.__proto__ || Object.getPrototypeOf(FileView)).call(this, props));
 	    }
 
-	    _createClass(ErrorsComponent, [{
+	    _createClass(FileView, [{
 	        key: "render",
 	        value: function render() {
-
-	            var errors = void 0;
-	            if (this.props.errors.length > 0) {
-	                errors = this.props.errors[0].message;
+	            var node = this.props.fileTree.currentNode;
+	            var content = node.item.properties["file:content"];
+	            var embedded = void 0;
+	            if (content) {
+	                embedded = _react2.default.createElement(
+	                    "div",
+	                    null,
+	                    _react2.default.createElement(
+	                        "h3",
+	                        null,
+	                        content["name"]
+	                    ),
+	                    _react2.default.createElement("embed", { src: content["data"], type: content["mime-type"], className: "upload-preview-embed" }),
+	                    _react2.default.createElement(
+	                        "a",
+	                        { href: content["data"], download: true },
+	                        "Download Link"
+	                    )
+	                );
 	            }
 
 	            return _react2.default.createElement(
 	                "div",
-	                { className: "main-wrapper" },
+	                { className: "file-view-wrapper" },
 	                _react2.default.createElement(
-	                    "div",
-	                    { className: "error-messages" },
-	                    errors
+	                    "h3",
+	                    null,
+	                    "Attachments"
 	                ),
-	                this.props.children
+	                _react2.default.createElement(
+	                    "ul",
+	                    null,
+	                    embedded
+	                )
 	            );
 	        }
 	    }]);
 
-	    return ErrorsComponent;
+	    return FileView;
 	}(_react2.default.Component);
 
-	;
+	module.exports = FileView;
 
-	exports.default = ErrorsComponent;
+/***/ },
+/* 289 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var FolderView = function (_React$Component) {
+	    _inherits(FolderView, _React$Component);
+
+	    function FolderView(props) {
+	        _classCallCheck(this, FolderView);
+
+	        return _possibleConstructorReturn(this, (FolderView.__proto__ || Object.getPrototypeOf(FolderView)).call(this, props));
+	    }
+
+	    _createClass(FolderView, [{
+	        key: "_deleteFile",
+	        value: function _deleteFile(node, e) {
+	            var _this2 = this;
+
+	            e.preventDefault();
+	            var callback = function callback() {
+	                _this2.props.setCurrentNode(_this2.props.fileTree.currentNode);
+	            };
+	            this.props.deleteDocument(node, callback);
+	        }
+	    }, {
+	        key: "_setWorkingFile",
+	        value: function _setWorkingFile(node, e) {
+	            e.preventDefault();
+	            node.parent.showChildren = true;
+	            node.showChildren = true;
+	            this.props.setCurrentNode(node);
+	            this.props.fetchChildren(node);
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            var _this3 = this;
+
+	            var node = this.props.fileTree.currentNode;
+	            var fileProperties = node.item.properties;
+	            var childNodes = node.children;
+	            var list = Object.keys(childNodes).map(function (id) {
+	                return _react2.default.createElement(
+	                    "li",
+	                    { key: id, className: "file-view-list-item" },
+	                    _react2.default.createElement(
+	                        "button",
+	                        { onClick: _this3._deleteFile.bind(_this3, childNodes[id]), className: "submit-button delete-button" },
+	                        "Delete"
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { onClick: _this3._setWorkingFile.bind(_this3, childNodes[id]) },
+	                        childNodes[id].item.title
+	                    )
+	                );
+	            });
+
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "file-view-wrapper" },
+	                _react2.default.createElement(
+	                    "h3",
+	                    null,
+	                    "Sub-files & Folders"
+	                ),
+	                _react2.default.createElement(
+	                    "ul",
+	                    null,
+	                    list
+	                )
+	            );
+	        }
+	    }]);
+
+	    return FolderView;
+	}(_react2.default.Component);
+
+	module.exports = FolderView;
 
 /***/ },
 /* 290 */
@@ -58026,113 +58184,14 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.DocumentViewContainers = undefined;
-
-	var _reactRedux = __webpack_require__(233);
-
-	var _tree_actions = __webpack_require__(273);
-
-	var _error_actions = __webpack_require__(266);
-
-	var _file_tree = __webpack_require__(287);
-
-	var _file_tree2 = _interopRequireDefault(_file_tree);
-
-	var _main_view = __webpack_require__(272);
-
-	var _main_view2 = _interopRequireDefault(_main_view);
-
-	var _right_main_view = __webpack_require__(274);
-
-	var _right_main_view2 = _interopRequireDefault(_right_main_view);
-
-	var _attach_file = __webpack_require__(285);
-
-	var _attach_file2 = _interopRequireDefault(_attach_file);
-
-	var _create_document_form = __webpack_require__(277);
-
-	var _create_document_form2 = _interopRequireDefault(_create_document_form);
-
-	var _edit_document = __webpack_require__(286);
-
-	var _edit_document2 = _interopRequireDefault(_edit_document);
-
-	var _file_view = __webpack_require__(275);
-
-	var _file_view2 = _interopRequireDefault(_file_view);
-
-	var _folder_view = __webpack_require__(276);
-
-	var _folder_view2 = _interopRequireDefault(_folder_view);
-
-	var _show_acl = __webpack_require__(279);
-
-	var _show_acl2 = _interopRequireDefault(_show_acl);
-
-	var _show_audit = __webpack_require__(280);
-
-	var _show_audit2 = _interopRequireDefault(_show_audit);
-
-	var _show_task = __webpack_require__(281);
-
-	var _show_task2 = _interopRequireDefault(_show_task);
-
-	var _show_workflow = __webpack_require__(282);
-
-	var _show_workflow2 = _interopRequireDefault(_show_workflow);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var mapStateToProps = function mapStateToProps(_ref) {
-	    var fileTree = _ref.fileTree;
-	    return {
-	        fileTree: fileTree
-	    };
-	};
-
-	var mapDispatchToProps = function mapDispatchToProps(_dispatch) {
-	    return {
-	        setCurrentNode: function setCurrentNode(node) {
-	            return _dispatch((0, _tree_actions.setCurrentNode)(node));
-	        },
-	        flashErrors: function flashErrors(errors) {
-	            return _dispatch((0, _error_actions.flashErrors)(errors));
-	        },
-	        setRootNode: function setRootNode(rootNode) {
-	            return _dispatch((0, _tree_actions.setRootNode)(rootNode));
-	        },
-	        dispatch: function dispatch(action) {
-	            return _dispatch(action);
-	        },
-	        fetchChildren: function fetchChildren(parentNode) {
-	            return _dispatch((0, _tree_actions.fetchChildren)(parentNode));
-	        }
-	    };
-	};
-
-	var DocumentViewContainers = exports.DocumentViewContainers = [_main_view2.default, _right_main_view2.default, _file_view2.default, _folder_view2.default].reduce(function (acc, component) {
-	    acc[component.name + 'Container'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(component);
-	    return acc;
-	}, {});
-
-/***/ },
-/* 291 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
 
 	var _redux = __webpack_require__(240);
 
-	var _reduxThunk = __webpack_require__(292);
+	var _reduxThunk = __webpack_require__(291);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _root_reducer = __webpack_require__(293);
+	var _root_reducer = __webpack_require__(292);
 
 	var _root_reducer2 = _interopRequireDefault(_root_reducer);
 
@@ -58147,7 +58206,7 @@
 	exports.default = configureStore;
 
 /***/ },
-/* 292 */
+/* 291 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -58175,7 +58234,7 @@
 	exports['default'] = thunk;
 
 /***/ },
-/* 293 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58186,11 +58245,11 @@
 
 	var _redux = __webpack_require__(240);
 
-	var _errors_reducer = __webpack_require__(294);
+	var _errors_reducer = __webpack_require__(293);
 
 	var _errors_reducer2 = _interopRequireDefault(_errors_reducer);
 
-	var _file_tree_reducer = __webpack_require__(295);
+	var _file_tree_reducer = __webpack_require__(294);
 
 	var _file_tree_reducer2 = _interopRequireDefault(_file_tree_reducer);
 
@@ -58202,7 +58261,7 @@
 	});
 
 /***/ },
-/* 294 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58230,7 +58289,7 @@
 	exports.default = ErrorsReducer;
 
 /***/ },
-/* 295 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58241,7 +58300,7 @@
 
 	var _lodash = __webpack_require__(263);
 
-	var _tree_actions = __webpack_require__(273);
+	var _tree_actions = __webpack_require__(275);
 
 	var defaultState = {
 	    root: {},
@@ -58262,71 +58321,21 @@
 	                action.parentNode.addChild(child);
 	            });
 	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        case _tree_actions.CREATE_NODE:
+	            action.parentNode.addChild(action.childNode);
+	            return state;
+	        case _tree_actions.DELETE_NODE:
+	            action.node.parent.removeChild(action.node);
+	            return state;
+	        case _tree_actions.ATTACH_FILE:
+	            action.node.item = action.newDoc;
+	            return state;
 	        default:
 	            return state;
 	    }
 	};
 
 	exports.default = FileTreeReducer;
-
-/***/ },
-/* 296 */,
-/* 297 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var TreeNode = function () {
-	    function TreeNode(item) {
-	        _classCallCheck(this, TreeNode);
-
-	        this.item = item;
-	        this.uid = item.uid;
-	        this.parent = undefined;
-	        this.showChildren = false;
-	        //adapter parameters
-	        this.children = {};
-	        this.acl = undefined;
-	        this.workflow = undefined;
-	        this.audit = undefined;
-	        this.task = undefined;
-	        this.blob = undefined;
-	        this.rendition = undefined;
-	    }
-
-	    _createClass(TreeNode, [{
-	        key: "setParent",
-	        value: function setParent(node) {
-	            if (this.parent) {
-	                this.parent.removeChild(this);
-	            }
-	            this.parent = node;
-	            node.children[this.uid] = this;
-	        }
-	    }, {
-	        key: "removeChild",
-	        value: function removeChild(node) {
-	            delete this.children[node.uid];
-	        }
-	    }, {
-	        key: "addChild",
-	        value: function addChild(node) {
-	            node.setParent(this);
-	        }
-	    }]);
-
-	    return TreeNode;
-	}();
-
-	exports.default = TreeNode;
 
 /***/ }
 /******/ ]);

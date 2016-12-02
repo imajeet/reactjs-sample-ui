@@ -4,11 +4,11 @@ import TreeActions from '../../../actions/tree_actions.js';
 class ShowACL extends React.Component {
     constructor(props){
         super(props);
-        TreeActions.getacl(this.props.workingNode);
+        TreeActions.getacl(this.props.currentNode);
     }
 
     render() {
-        let node = this.props.workingNode;
+        let node = this.props.currentNode;
         let aclList;
         if (node.acl) {
             aclList = node.acl.acl[0].ace.map((el, index) => {

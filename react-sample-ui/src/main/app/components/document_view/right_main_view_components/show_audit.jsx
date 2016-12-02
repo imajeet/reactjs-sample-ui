@@ -4,7 +4,7 @@ import TreeActions from '../../../actions/tree_actions.js';
 class ShowAudit extends React.Component {
     constructor(props){
         super(props);
-        TreeActions.getaudit(this.props.workingNode);
+        TreeActions.getaudit(this.props.currentNode);
     }
 
     render() {

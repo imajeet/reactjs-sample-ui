@@ -32,7 +32,7 @@ const NuxeoUtils = {
       // },
     });
     _nuxeo = nuxeo;
-    _nuxeo.header('X-NXDocumentProperties', '*');
+    // _nuxeo.header('X-NXDocumentProperties', '*');
     window.nuxeo = _nuxeo;
     let success = (res) => {
         DocumentStore.setUser(res);
@@ -41,7 +41,7 @@ const NuxeoUtils = {
     NuxeoUtils.crudUtil({
         success: success
     });
-   _nuxeo.enrichers({document: ['subtypes']});
+   // _nuxeo.enrichers({document: ['subtypes']});
     // _nuxeo.login()
     //   .then(function(res) {
     //     DocumentStore.setUser(res);
@@ -85,14 +85,14 @@ const NuxeoUtils = {
   },
 
 
-  attachFile(docToAttachTo, upload, success) {
+  attachFile(node, upload, success) {
     let blob = new Nuxeo.Blob({content: upload.file});
       const batch = _nuxeo.batchUpload();
       _nuxeo.Promise.all([batch.upload(blob)])
           .then((values) => {
               let batchBlob = values[0].blob;
-              docToAttachTo.item.set({ 'file:content': batchBlob });
-              return docToAttachTo.item.save({ schemas: ['dublincore', 'file'] });
+              node.item.set({ 'file:content': batchBlob });
+              return node.item.save({ schemas: ['dublincore', 'file'] });
           })
           .then(success);
   },

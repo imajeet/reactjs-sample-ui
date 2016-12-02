@@ -5,6 +5,9 @@ import DocumentStore from '../data/document_store';
 export const SET_CURRENT_NODE = "SET_CURRENT_NODE";
 export const SET_ROOT_NODE = "SET_ROOT_NODE";
 export const ADD_CHILD_NODES = "ADD_CHILD_NODES";
+export const DELETE_NODE = "DELETE_NODE";
+export const CREATE_NODE = "CREATE_NODE";
+export const ATTACH_FILE = "ATTACH_FILE";
 
 
 export function setCurrentNode(node) {
@@ -47,38 +50,65 @@ export function fetchChildren(node) {
     }
 }
 
+export function deleteDocument(node, callback){
+    return (dispatch) => {
+        NuxeoUtils.crudUtil({
+                method: "delete",
+                path: node.item.uid,
+                success: (doc) => {
+                    dispatch({
+                        type: DELETE_NODE,
+                        node: node
+                    });
+                    if (callback) {
+                       callback();
+                    }
+            }
+        })
+    }
+}
 
+
+export function createDocument(parentNode, doc, callback){
+    return (dispatch) => {
+        NuxeoUtils.crudUtil({
+            method: "create",
+            path: parentNode.item.uid,
+            data: doc,
+            success: (doc) => {
+                let childNode = new TreeNode(doc);
+                dispatch({
+                    type: CREATE_NODE,
+                    parentNode: parentNode,
+                    childNode: childNode,
+                });
+                dispatch(setCurrentNode(parentNode));
+                if (callback) {
+                    callback()
+                }
+            }
+        })
+    }
+}
+
+export function attachFile(node, upload, callback) {
+    return function(dispatch) {
+        let success = (newDoc) => {
+            dispatch({
+                type: ATTACH_FILE,
+                node: node,
+                newDoc: newDoc,
+            });
+            if (callback) {
+                callback();
+            }
+        };
+        NuxeoUtils.attachFile(node, upload, success);
+    }
+}
 
 
 const TreeActions = {
-    deleteDocument(node){
-        let path = node.item.uid;
-        let success = (doc) => {
-            DocumentStore.deleteChild(node.parent, node);
-        };
-       NuxeoUtils.crudUtil({
-           method: "delete",
-           path: path,
-           success: success
-       });
-    },
-
-    createDocument(node, doc, success){
-        let finalDoc = {
-            "entity-type": "document",
-            "name":`${doc.title}`,
-            "type": `${doc.type}`,
-        };
-
-        let path = node.item.uid;
-        NuxeoUtils.crudUtil({
-            method: "create",
-            path: path,
-            data: finalDoc,
-            success: success
-
-        });
-    },
 
     editDocument(node, doc){
         let success = (doc) => {

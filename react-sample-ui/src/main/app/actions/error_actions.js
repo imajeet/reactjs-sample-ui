@@ -21,6 +21,6 @@ export function flashErrors(errors) {
 
                 setTimeout(() => {
                     dispatch(clearErrors())
-                }, 1500)
+                }, 3000)
             }
 }

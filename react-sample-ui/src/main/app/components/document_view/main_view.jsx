@@ -3,10 +3,10 @@ import React from 'react';
 import DocumentStore from '../../data/document_store.js';
 // components
 
-import FileTree from './file_tree.jsx';
+
 
 //containers
-import { DocumentViewContainers } from './document_view_container';
+import { FileTreeContainer, RightMainViewContainer } from './document_view_container';
 
 class MainView extends React.Component {
   constructor(props) {
@@ -26,7 +26,7 @@ class MainView extends React.Component {
     let currentNode = this.props.fileTree.currentNode;
     if (this.props.fileTree.root.item) {
       tree = (
-        <FileTree
+        <FileTreeContainer
             node={this.props.fileTree.root}
             setCurrentNode={this.props.setCurrentNode}
             currentNode={currentNode}
@@ -36,7 +36,7 @@ class MainView extends React.Component {
     }
 
     if (currentNode.item) {
-      workingNode = <DocumentViewContainers.RightMainViewContainer/>;
+      workingNode = <RightMainViewContainer/>;
     }
 
     return (
