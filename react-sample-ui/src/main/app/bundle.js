@@ -60,19 +60,15 @@
 
 	var _reactRedux = __webpack_require__(233);
 
-	var _log_in = __webpack_require__(261);
+	var _log_in_container = __webpack_require__(297);
 
-	var _log_in2 = _interopRequireDefault(_log_in);
+	var _log_in_container2 = _interopRequireDefault(_log_in_container);
 
 	var _errors_container = __webpack_require__(272);
 
 	var _errors_container2 = _interopRequireDefault(_errors_container);
 
 	var _document_view_container = __webpack_require__(274);
-
-	var _document_store = __webpack_require__(264);
-
-	var _document_store2 = _interopRequireDefault(_document_store);
 
 	var _store = __webpack_require__(290);
 
@@ -85,20 +81,19 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	// store
-
-
-	// components
-	var redirectConditions = function redirectConditions(nextState, replace) {
-	    if (!_document_store2.default.getUser()) {
-	        replace("/");
-	    }
-	};
-
+	var store = (0, _store2.default)();
 	//utils
 
 
-	// data
+	// components
 
+	_nuxeo_utils2.default.addStore(store);
+
+	var redirectConditions = function redirectConditions(nextState, replace) {
+	    if (!store.getState().currentUser.id) {
+	        replace("/");
+	    }
+	};
 
 	var Root = function Root(_ref) {
 	    var store = _ref.store;
@@ -112,7 +107,7 @@
 	            _react2.default.createElement(
 	                _reactRouter.Router,
 	                { history: _reactRouter.hashHistory },
-	                _react2.default.createElement(_reactRouter.Route, { path: '/', component: _log_in2.default }),
+	                _react2.default.createElement(_reactRouter.Route, { path: '/', component: _log_in_container2.default }),
 	                _react2.default.createElement(_reactRouter.Route, { path: '/documents', component: _document_view_container.MainViewContainer, onEnter: redirectConditions })
 	            )
 	        )
@@ -120,9 +115,7 @@
 	};
 
 	document.addEventListener("DOMContentLoaded", function () {
-	    var store = (0, _store2.default)();
 	    var root = document.getElementById('root');
-	    _nuxeo_utils2.default.addStore(store);
 	    _reactDom2.default.render(_react2.default.createElement(Root, { store: store }), root);
 	});
 
@@ -28073,101 +28066,7 @@
 	}
 
 /***/ },
-/* 261 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRouter = __webpack_require__(178);
-
-	var _nuxeo_utils = __webpack_require__(262);
-
-	var _nuxeo_utils2 = _interopRequireDefault(_nuxeo_utils);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var LogIn = function (_React$Component) {
-	  _inherits(LogIn, _React$Component);
-
-	  function LogIn(props) {
-	    _classCallCheck(this, LogIn);
-
-	    var _this = _possibleConstructorReturn(this, (LogIn.__proto__ || Object.getPrototypeOf(LogIn)).call(this, props));
-
-	    _this.state = {
-	      username: "Administrator",
-	      password: "Administrator",
-	      url: "http://localhost:8080/nuxeo"
-	    };
-	    return _this;
-	  }
-
-	  _createClass(LogIn, [{
-	    key: '_handleChange',
-	    value: function _handleChange(field) {
-	      var _this2 = this;
-
-	      return function (e) {
-	        _this2.setState(_defineProperty({}, field, e.target.value));
-	      };
-	    }
-	  }, {
-	    key: '_directToDashboard',
-	    value: function _directToDashboard() {
-	      _reactRouter.hashHistory.push('/documents');
-	    }
-	  }, {
-	    key: '_submitForm',
-	    value: function _submitForm(e) {
-	      e.preventDefault();
-	      _nuxeo_utils2.default.signIn(this.state, this._directToDashboard);
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'login-background' },
-	        _react2.default.createElement('div', { className: 'login-buffer-box' }),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'login-wrapper' },
-	          _react2.default.createElement(
-	            'form',
-	            { className: 'login-form', onSubmit: this._submitForm.bind(this) },
-	            _react2.default.createElement(
-	              'div',
-	              null,
-	              'URL:',
-	              _react2.default.createElement('input', { className: 'login-input-field', type: 'text', value: this.state.url, onChange: this._handleChange("url") })
-	            ),
-	            _react2.default.createElement('input', { type: 'submit', value: 'Sign In', className: 'login-button' })
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return LogIn;
-	}(_react2.default.Component);
-
-	module.exports = LogIn;
-
-/***/ },
+/* 261 */,
 /* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -28179,13 +28078,7 @@
 
 	var _lodash = __webpack_require__(263);
 
-	var _document_store = __webpack_require__(264);
-
-	var _document_store2 = _interopRequireDefault(_document_store);
-
 	var _error_actions = __webpack_require__(266);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var Nuxeo = __webpack_require__(267);
 
@@ -28209,30 +28102,23 @@
 	};
 
 	var NuxeoUtils = {
-	    signIn: function signIn(logIn, directToDashboard) {
+	    signIn: function signIn(_signIn, callback) {
 	        var nuxeo = new Nuxeo({
-	            baseURL: logIn.url
+	            baseURL: _signIn.url,
+	            auth: {
+	                method: 'basic',
+	                username: _signIn.username,
+	                password: _signIn.password
+	            }
 	        });
 	        _nuxeo = nuxeo;
-	        // _nuxeo.header('X-NXDocumentProperties', '*');
-	        window.nuxeo = _nuxeo;
-	        var success = function success(res) {
-	            _document_store2.default.setUser(res);
-	            directToDashboard();
-	        };
-	        NuxeoUtils.crudUtil({
-	            success: success
-	        });
-	        // _nuxeo.enrichers({document: ['subtypes']});
-	        // _nuxeo.login()
-	        //   .then(function(res) {
-	        //     DocumentStore.setUser(res);
-	        //     directToDashboard();
-	        //   })
-	        //   .catch(function(error) {
-	        //     throw error;
-	        //   });
+	        _nuxeo.login().then(callback);
 	    },
+
+
+	    // _nuxeo.header('X-NXDocumentProperties', '*');
+	    // _nuxeo.enrichers({document: ['subtypes']});
+
 	    batchUpload: function batchUpload(params) {
 	        var blob = new Nuxeo.Blob({
 	            content: params.data.file,
@@ -28270,11 +28156,6 @@
 	            node.item.set({ 'file:content': batchBlob });
 	            return node.item.save({ schemas: ['dublincore', 'file'] });
 	        }).then(success);
-	    },
-	    getUser: function getUser(username) {
-	        _nuxeo.users().fetch(username).then(function (res) {
-	            console.log(res);
-	        });
 	    },
 	    crudUtil: function crudUtil(params) {
 	        var finalParams = (0, _lodash.merge)({}, DEFAULTS, params);
@@ -28320,10 +28201,6 @@
 	};
 
 	exports.default = NuxeoUtils;
-
-	Object.keys(NuxeoUtils).forEach(function (key) {
-	    window[key] = NuxeoUtils[key];
-	});
 
 /***/ },
 /* 263 */
@@ -45398,133 +45275,8 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(254)(module)))
 
 /***/ },
-/* 264 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _tree_node = __webpack_require__(265);
-
-	var _tree_node2 = _interopRequireDefault(_tree_node);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var _listeners = [];
-	var _root = void 0;
-	var _user = void 0;
-	var _workingNode = void 0;
-
-	var DocumentStore = {
-	  getRoot: function getRoot() {
-	    return _root;
-	  },
-	  setRoot: function setRoot(mainRepo) {
-	    _root = new _tree_node2.default(mainRepo);
-	    DocumentStore.invokeListeners();
-	    return _root;
-	  },
-	  addChild: function addChild(parentNode, childEl) {
-	    parentNode.addChild(new _tree_node2.default(childEl));
-	    DocumentStore.invokeListeners();
-	  },
-	  deleteChild: function deleteChild(parentNode, childNode) {
-	    parentNode.removeChild(childNode);
-	    DocumentStore.invokeListeners();
-	  },
-	  setUser: function setUser(user) {
-	    _user = user;
-	  },
-	  getUser: function getUser() {
-	    return _user;
-	  },
-	  addListener: function addListener(listener) {
-	    _listeners.push(listener);
-	    var idx = _listeners.indexOf(listener);
-	    return {
-	      remove: function remove() {
-	        _listeners.splice(idx, 1);
-	      }
-	    };
-	  },
-	  invokeListeners: function invokeListeners() {
-	    _listeners.forEach(function (listener) {
-	      listener();
-	    });
-	  },
-	  setWorkingNode: function setWorkingNode(node) {
-	    _workingNode = node;
-	    DocumentStore.invokeListeners();
-	  },
-	  getWorkingNode: function getWorkingNode() {
-	    return _workingNode;
-	  },
-	  setProperty: function setProperty(node, res, adapter) {
-	    node[adapter] = res;
-	    DocumentStore.invokeListeners();
-	  }
-	};
-
-	exports.default = DocumentStore;
-
-/***/ },
-/* 265 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var TreeNode = function () {
-	  function TreeNode(item) {
-	    _classCallCheck(this, TreeNode);
-
-	    this.item = item;
-	    this.uid = item.uid;
-	    this.parent = undefined;
-	    this.showChildren = false;
-	    //adapter parameters
-	    this.children = {};
-	    this.acl = undefined;
-	    this.workflow = undefined;
-	    this.audit = undefined;
-	    this.task = undefined;
-	    this.blob = undefined;
-	    this.rendition = undefined;
-	  }
-
-	  _createClass(TreeNode, [{
-	    key: "setParent",
-	    value: function setParent(node) {
-	      if (this.parent) {
-	        this.parent.removeChild(this);
-	      }
-	      this.parent = node;
-	      node.children[this.uid] = this;
-	    }
-	  }, {
-	    key: "removeChild",
-	    value: function removeChild(node) {
-	      delete this.children[node.uid];
-	    }
-	  }, {
-	    key: "addChild",
-	    value: function addChild(node) {
-	      node.setParent(this);
-	    }
-	  }]);
-
-	  return TreeNode;
-	}();
-
-	module.exports = TreeNode;
-
-/***/ },
+/* 264 */,
+/* 265 */,
 /* 266 */
 /***/ function(module, exports) {
 
@@ -56565,12 +56317,10 @@
 	    _createClass(ErrorsComponent, [{
 	        key: "render",
 	        value: function render() {
-
 	            var errors = void 0;
 	            if (this.props.errors.length > 0) {
 	                errors = this.props.errors[0].message;
 	            }
-
 	            return _react2.default.createElement(
 	                "div",
 	                { className: "main-wrapper" },
@@ -56659,9 +56409,11 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var mapStateToProps = function mapStateToProps(_ref) {
-	    var fileTree = _ref.fileTree;
+	    var fileTree = _ref.fileTree,
+	        currentUser = _ref.currentUser;
 	    return {
-	        fileTree: fileTree
+	        fileTree: fileTree,
+	        currentUser: currentUser
 	    };
 	};
 
@@ -56685,8 +56437,8 @@
 	        createDocument: function createDocument(parentNode, doc, callback) {
 	            return _dispatch((0, _tree_actions.createDocument)(parentNode, doc, callback));
 	        },
-	        attachFile: function attachFile(node, upload) {
-	            return _dispatch((0, _tree_actions.attachFile)(node, upload));
+	        attachFile: function attachFile(node, upload, callback) {
+	            return _dispatch((0, _tree_actions.attachFile)(node, upload, callback));
 	        },
 	        dispatch: function dispatch(action) {
 	            return _dispatch(action);
@@ -56716,13 +56468,14 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.ATTACH_FILE = exports.CREATE_NODE = exports.DELETE_NODE = exports.ADD_CHILD_NODES = exports.SET_ROOT_NODE = exports.SET_CURRENT_NODE = undefined;
+	exports.SET_PROPERTY = exports.ATTACH_FILE = exports.CREATE_NODE = exports.DELETE_NODE = exports.ADD_CHILD_NODES = exports.SET_ROOT_NODE = exports.SET_CURRENT_NODE = undefined;
 	exports.setCurrentNode = setCurrentNode;
 	exports.setRootNode = setRootNode;
 	exports.fetchChildren = fetchChildren;
 	exports.deleteDocument = deleteDocument;
 	exports.createDocument = createDocument;
 	exports.attachFile = attachFile;
+	exports.setProperty = setProperty;
 
 	var _nuxeo_utils = __webpack_require__(262);
 
@@ -56732,10 +56485,6 @@
 
 	var _tree_node2 = _interopRequireDefault(_tree_node);
 
-	var _document_store = __webpack_require__(264);
-
-	var _document_store2 = _interopRequireDefault(_document_store);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var SET_CURRENT_NODE = exports.SET_CURRENT_NODE = "SET_CURRENT_NODE";
@@ -56744,6 +56493,7 @@
 	var DELETE_NODE = exports.DELETE_NODE = "DELETE_NODE";
 	var CREATE_NODE = exports.CREATE_NODE = "CREATE_NODE";
 	var ATTACH_FILE = exports.ATTACH_FILE = "ATTACH_FILE";
+	var SET_PROPERTY = exports.SET_PROPERTY = "SET_PROPERTY";
 
 	function setCurrentNode(node) {
 	    return {
@@ -56815,7 +56565,6 @@
 	                    parentNode: parentNode,
 	                    childNode: childNode
 	                });
-	                dispatch(setCurrentNode(parentNode));
 	                if (callback) {
 	                    callback();
 	                }
@@ -56840,39 +56589,42 @@
 	    };
 	}
 
-	var TreeActions = {
-	    editDocument: function editDocument(node, doc) {
-	        var success = function success(doc) {};
-	        var path = node.item.uid;
-	        _nuxeo_utils2.default.crudUtil({
-	            type: 'update',
-	            path: path,
-	            data: doc,
-	            success: success
-	        });
-	    },
-	    attachFile: function attachFile(node, upload) {
-	        var success = function success(res) {
-	            node.item = res;
-	            TreeActions.setWorkingNode(node);
-	        };
-	        _nuxeo_utils2.default.attachFile(node, upload, success);
-	    }
-	};
+	function setProperty(node, property, value) {
+	    return {
+	        type: SET_PROPERTY,
+	        node: node,
+	        property: property,
+	        value: value
+	    };
+	}
+
+	// export function editDocument(node, doc) {
+	//        let success = (doc) => {
+	//        };
+	//        let path = node.item.uid;
+	//        NuxeoUtils.crudUtil({
+	//           type: 'update',
+	//           path:  path,
+	//           data:  doc,
+	//           success: success
+	//        });
+	// }
+
+	var TreeActions = {};
 
 	["acl", "workflow", "task", "audit"].forEach(function (adapter) {
 	    TreeActions['get' + adapter] = function (node) {
-	        var success = function success(res) {
-	            _document_store2.default.setProperty(node, res, adapter);
+	        return function (dispatch) {
+	            var success = function success(res) {
+	                dispatch(setProperty(node, adapter, res));
+	            };
+	            _nuxeo_utils2.default.crudUtil({
+	                method: "get",
+	                path: node.item.uid,
+	                adapter: '' + adapter,
+	                success: success
+	            });
 	        };
-
-	        var path = node.item.uid;
-	        _nuxeo_utils2.default.crudUtil({
-	            method: "get",
-	            path: path,
-	            adapter: '' + adapter,
-	            success: success
-	        });
 	    };
 	});
 
@@ -57091,10 +56843,6 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _document_store = __webpack_require__(264);
-
-	var _document_store2 = _interopRequireDefault(_document_store);
-
 	var _document_view_container = __webpack_require__(274);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -57104,11 +56852,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	// store
-
-	// components
-
-
 	//containers
 
 
@@ -57118,12 +56861,7 @@
 	  function MainView(props) {
 	    _classCallCheck(this, MainView);
 
-	    var _this = _possibleConstructorReturn(this, (MainView.__proto__ || Object.getPrototypeOf(MainView)).call(this, props));
-
-	    _this.state = {
-	      user: _document_store2.default.getUser()
-	    };
-	    return _this;
+	    return _possibleConstructorReturn(this, (MainView.__proto__ || Object.getPrototypeOf(MainView)).call(this, props));
 	  }
 
 	  _createClass(MainView, [{
@@ -57159,7 +56897,7 @@
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'side-panel-profile' },
-	            this.state.user.id
+	            this.props.currentUser.id
 	          ),
 	          tree
 	        ),
@@ -57428,6 +57166,8 @@
 	    }, {
 	        key: '_handleSubmit',
 	        value: function _handleSubmit(e) {
+	            var _this3 = this;
+
 	            e.preventDefault();
 	            var doc = {
 	                'entity-type': 'document',
@@ -57439,21 +57179,20 @@
 	                }
 	            };
 	            var parentNode = this.props.fileTree.currentNode;
-	            var callback = this.setState({
-	                title: "",
-	                description: ""
-	            });
+	            var callback = function callback() {
+	                _this3.setState({ title: "", description: "" });
+	            };
 	            this.props.createDocument(parentNode, doc, callback);
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this3 = this;
+	            var _this4 = this;
 
 	            var createCollaborativeWorkspaces = containers.map(function (type) {
 	                return _react2.default.createElement(
 	                    'button',
-	                    { className: 'create-document-button', key: type, onClick: _this3._changeDocumentType.bind(_this3, type) },
+	                    { className: 'create-document-button', key: type, onClick: _this4._changeDocumentType.bind(_this4, type) },
 	                    type
 	                );
 	            });
@@ -57461,7 +57200,7 @@
 	            var createDocuments = documents.map(function (type) {
 	                return _react2.default.createElement(
 	                    'button',
-	                    { className: 'create-document-button', key: type, onClick: _this3._changeDocumentType.bind(_this3, type) },
+	                    { className: 'create-document-button', key: type, onClick: _this4._changeDocumentType.bind(_this4, type) },
 	                    type
 	                );
 	            });
@@ -57523,6 +57262,10 @@
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
@@ -57547,16 +57290,18 @@
 	    function ShowACL(props) {
 	        _classCallCheck(this, ShowACL);
 
-	        var _this = _possibleConstructorReturn(this, (ShowACL.__proto__ || Object.getPrototypeOf(ShowACL)).call(this, props));
-
-	        _tree_actions2.default.getacl(_this.props.currentNode);
-	        return _this;
+	        return _possibleConstructorReturn(this, (ShowACL.__proto__ || Object.getPrototypeOf(ShowACL)).call(this, props));
 	    }
 
 	    _createClass(ShowACL, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            _tree_actions2.default.getacl(this.props.fileTree.currentNode)(this.props.dispatch);
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var node = this.props.currentNode;
+	            var node = this.props.fileTree.currentNode;
 	            var aclList = void 0;
 	            if (node.acl) {
 	                aclList = node.acl.acl[0].ace.map(function (el, index) {
@@ -57584,7 +57329,7 @@
 	    return ShowACL;
 	}(_react2.default.Component);
 
-	module.exports = ShowACL;
+	exports.default = ShowACL;
 
 /***/ },
 /* 283 */
@@ -57616,16 +57361,18 @@
 	    function ShowAudit(props) {
 	        _classCallCheck(this, ShowAudit);
 
-	        var _this = _possibleConstructorReturn(this, (ShowAudit.__proto__ || Object.getPrototypeOf(ShowAudit)).call(this, props));
-
-	        _tree_actions2.default.getaudit(_this.props.currentNode);
-	        return _this;
+	        return _possibleConstructorReturn(this, (ShowAudit.__proto__ || Object.getPrototypeOf(ShowAudit)).call(this, props));
 	    }
 
 	    _createClass(ShowAudit, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            _tree_actions2.default.getaudit(this.props.fileTree.currentNode)(this.props.dispatch);
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var node = this.props.workingNode;
+	            var node = this.props.fileTree.currentNode;
 	            var auditList = void 0;
 	            if (node.audit) {
 	                auditList = node.audit.entries.map(function (el, index) {
@@ -57703,16 +57450,18 @@
 	    function ShowTask(props) {
 	        _classCallCheck(this, ShowTask);
 
-	        var _this = _possibleConstructorReturn(this, (ShowTask.__proto__ || Object.getPrototypeOf(ShowTask)).call(this, props));
-
-	        _tree_actions2.default.gettask(_this.props.currentNode);
-	        return _this;
+	        return _possibleConstructorReturn(this, (ShowTask.__proto__ || Object.getPrototypeOf(ShowTask)).call(this, props));
 	    }
 
 	    _createClass(ShowTask, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            _tree_actions2.default.gettask(this.props.fileTree.currentNode)(this.props.dispatch);
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var node = this.props.currentNode;
+	            var node = this.props.fileTree.currentNode;
 	            var string = JSON.stringify(node.task);
 	            return _react2.default.createElement(
 	                'div',
@@ -57757,16 +57506,18 @@
 	    function ShowWorkFlow(props) {
 	        _classCallCheck(this, ShowWorkFlow);
 
-	        var _this = _possibleConstructorReturn(this, (ShowWorkFlow.__proto__ || Object.getPrototypeOf(ShowWorkFlow)).call(this, props));
-
-	        _tree_actions2.default.getworkflow(_this.props.currentNode);
-	        return _this;
+	        return _possibleConstructorReturn(this, (ShowWorkFlow.__proto__ || Object.getPrototypeOf(ShowWorkFlow)).call(this, props));
 	    }
 
 	    _createClass(ShowWorkFlow, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            _tree_actions2.default.getworkflow(this.props.fileTree.currentNode)(this.props.dispatch);
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var node = this.props.currentNode;
+	            var node = this.props.fileTree.currentNode;
 	            var string = JSON.stringify(node.workflow);
 	            return _react2.default.createElement(
 	                'div',
@@ -57785,15 +57536,13 @@
 /* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(275);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57826,7 +57575,7 @@
 	  }
 
 	  _createClass(AttachFile, [{
-	    key: '_handleChange',
+	    key: "_handleChange",
 	    value: function _handleChange(field) {
 	      var _this2 = this;
 
@@ -57835,7 +57584,7 @@
 	      };
 	    }
 	  }, {
-	    key: '_previewFile',
+	    key: "_previewFile",
 	    value: function _previewFile(e) {
 	      var _this3 = this;
 
@@ -57851,51 +57600,50 @@
 	      }
 	    }
 	  }, {
-	    key: '_handleSubmit',
+	    key: "_handleSubmit",
 	    value: function _handleSubmit(e) {
 	      var _this4 = this;
 
 	      e.preventDefault();
-	      var dispatch = this.props.dispatch;
+	      var currentNode = this.props.fileTree.currentNode;
 	      var callback = function callback() {
 	        _this4.setState(initialState);
-	        dispatch(_this4.props.setCurrentNode(_this4.props.currentNode));
 	      };
-	      (0, _tree_actions.attachFile)(this.props.currentNode, this.state, callback)(dispatch);
+	      this.props.attachFile(currentNode, this.state, callback);
 	    }
 	  }, {
-	    key: 'render',
+	    key: "render",
 	    value: function render() {
 	      var submit = this._handleSubmit.bind(this);
 	      var preview = this._previewFile.bind(this);
 	      var embedded = void 0;
 	      if (this.state.file) {
-	        embedded = _react2.default.createElement('embed', { src: this.state.fileUrl, type: this.state.file.type, className: 'upload-preview-embed' });
+	        embedded = _react2.default.createElement("embed", { src: this.state.fileUrl, type: this.state.file.type, className: "upload-preview-embed" });
 	      }
 
 	      return _react2.default.createElement(
-	        'div',
-	        { className: 'right-main-view-show-working-button' },
+	        "div",
+	        { className: "right-main-view-show-working-button" },
 	        _react2.default.createElement(
-	          'h3',
+	          "h3",
 	          null,
-	          'Attach File'
+	          "Attach File"
 	        ),
 	        _react2.default.createElement(
-	          'form',
-	          { onSubmit: submit, className: 'attach-file-form' },
-	          'Title:',
-	          _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("title"), value: this.state.title }),
-	          'Description:',
-	          _react2.default.createElement('input', { type: 'text', onChange: this._handleChange("description"), value: this.state.description }),
-	          _react2.default.createElement('br', null),
-	          'File:',
-	          _react2.default.createElement('input', { className: 'submit-button submit-button-upload', type: 'file', onChange: preview }),
-	          _react2.default.createElement('br', null),
-	          _react2.default.createElement('input', { className: 'submit-button', type: 'submit', value: 'Attach File' }),
+	          "form",
+	          { onSubmit: submit, className: "attach-file-form" },
+	          "Title:",
+	          _react2.default.createElement("input", { type: "text", onChange: this._handleChange("title"), value: this.state.title }),
+	          "Description:",
+	          _react2.default.createElement("input", { type: "text", onChange: this._handleChange("description"), value: this.state.description }),
+	          _react2.default.createElement("br", null),
+	          "File:",
+	          _react2.default.createElement("input", { className: "submit-button submit-button-upload", type: "file", onChange: preview }),
+	          _react2.default.createElement("br", null),
+	          _react2.default.createElement("input", { className: "submit-button", type: "submit", value: "Attach File" }),
 	          _react2.default.createElement(
-	            'div',
-	            { className: 'upload-preview' },
+	            "div",
+	            { className: "upload-preview" },
 	            embedded
 	          )
 	        )
@@ -57942,9 +57690,10 @@
 
 	        var _this = _possibleConstructorReturn(this, (EditDocument.__proto__ || Object.getPrototypeOf(EditDocument)).call(this, props));
 
+	        var document = _this.props.fileTree.currentNode.item;
 	        _this.state = {
-	            title: '' + _this.props.workingNode.item.title,
-	            description: '' + _this.props.workingNode.item.description
+	            title: '' + document.properties['dc:title'],
+	            description: '' + document.properties['dc:description']
 	        };
 	        return _this;
 	    }
@@ -57962,21 +57711,19 @@
 	        key: '_handleSubmit',
 	        value: function _handleSubmit(e) {
 	            e.preventDefault();
-	            var doc = this.props.workingNode.item;
+	            var doc = this.props.fileTree.currentNode.item;
 
 	            // doc.set({ 'dc:title' : this.state.title});
 	            // doc.set({'dc:description': this.state.description});
 
 	            doc.properties['dc:title'] = this.state.title;
 	            doc.properties['dc:description'] = this.state.description;
-	            debugger;
 	            _tree_actions2.default.editDocument(this.props.workingNode, doc);
 	            // this.setState({title:"", description: ""});
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'right-main-view-show-working-button' },
@@ -58134,7 +57881,6 @@
 	            var _this3 = this;
 
 	            var node = this.props.fileTree.currentNode;
-	            var fileProperties = node.item.properties;
 	            var childNodes = node.children;
 	            var list = Object.keys(childNodes).map(function (id) {
 	                return _react2.default.createElement(
@@ -58253,11 +57999,16 @@
 
 	var _file_tree_reducer2 = _interopRequireDefault(_file_tree_reducer);
 
+	var _user_reducer = __webpack_require__(298);
+
+	var _user_reducer2 = _interopRequireDefault(_user_reducer);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = (0, _redux.combineReducers)({
 	    errors: _errors_reducer2.default,
-	    fileTree: _file_tree_reducer2.default
+	    fileTree: _file_tree_reducer2.default,
+	    currentUser: _user_reducer2.default
 	});
 
 /***/ },
@@ -58323,19 +58074,225 @@
 	            return (0, _lodash.merge)({}, state, { root: state.root });
 	        case _tree_actions.CREATE_NODE:
 	            action.parentNode.addChild(action.childNode);
-	            return state;
+	            return (0, _lodash.merge)({}, state, { root: state.root });
 	        case _tree_actions.DELETE_NODE:
 	            action.node.parent.removeChild(action.node);
-	            return state;
+	            return (0, _lodash.merge)({}, state, { root: state.root });
 	        case _tree_actions.ATTACH_FILE:
 	            action.node.item = action.newDoc;
-	            return state;
+	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        case _tree_actions.SET_PROPERTY:
+	            action.node[action.property] = action.value;
+	            return (0, _lodash.merge)({}, state, { root: state.root });
 	        default:
 	            return state;
 	    }
 	};
 
 	exports.default = FileTreeReducer;
+
+/***/ },
+/* 295 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.SET_CURRENT_USER = undefined;
+	exports.setCurrentUser = setCurrentUser;
+	exports.getCurrentUser = getCurrentUser;
+
+	var _nuxeo_utils = __webpack_require__(262);
+
+	var _nuxeo_utils2 = _interopRequireDefault(_nuxeo_utils);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var SET_CURRENT_USER = exports.SET_CURRENT_USER = "SET_CURRENT_USER";
+
+	function setCurrentUser(user) {
+	    return {
+	        type: SET_CURRENT_USER,
+	        currentUser: user
+	    };
+	}
+
+	function getCurrentUser(signIn, callback) {
+	    return function (dispatch) {
+	        _nuxeo_utils2.default.signIn(signIn, callback);
+	    };
+	}
+
+/***/ },
+/* 296 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(178);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var LogIn = function (_React$Component) {
+	  _inherits(LogIn, _React$Component);
+
+	  function LogIn(props) {
+	    _classCallCheck(this, LogIn);
+
+	    var _this = _possibleConstructorReturn(this, (LogIn.__proto__ || Object.getPrototypeOf(LogIn)).call(this, props));
+
+	    _this.state = {
+	      username: "Administrator",
+	      password: "Administrator",
+	      url: "http://localhost:8080/nuxeo"
+	    };
+	    return _this;
+	  }
+
+	  _createClass(LogIn, [{
+	    key: '_handleChange',
+	    value: function _handleChange(field) {
+	      var _this2 = this;
+
+	      return function (e) {
+	        _this2.setState(_defineProperty({}, field, e.target.value));
+	      };
+	    }
+	  }, {
+	    key: '_directToDashboard',
+	    value: function _directToDashboard() {
+	      _reactRouter.hashHistory.push('/documents');
+	    }
+	  }, {
+	    key: '_submitForm',
+	    value: function _submitForm(e) {
+	      var _this3 = this;
+
+	      e.preventDefault();
+	      var callback = function callback(user) {
+	        _this3.props.setCurrentUser(user);
+	        _this3._directToDashboard();
+	      };
+	      this.props.getCurrentUser(this.state, callback);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'login-background' },
+	        _react2.default.createElement('div', { className: 'login-buffer-box' }),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'login-wrapper' },
+	          _react2.default.createElement(
+	            'form',
+	            { className: 'login-form', onSubmit: this._submitForm.bind(this) },
+	            _react2.default.createElement(
+	              'div',
+	              null,
+	              'URL:',
+	              _react2.default.createElement('input', { className: 'login-input-field', type: 'text', value: this.state.url, onChange: this._handleChange("url") })
+	            ),
+	            _react2.default.createElement('input', { type: 'submit', value: 'Sign In', className: 'login-button' })
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return LogIn;
+	}(_react2.default.Component);
+
+	exports.default = LogIn;
+
+/***/ },
+/* 297 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _reactRedux = __webpack_require__(233);
+
+	var _user_actions = __webpack_require__(295);
+
+	var _log_in = __webpack_require__(296);
+
+	var _log_in2 = _interopRequireDefault(_log_in);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var mapStateToProps = function mapStateToProps(_ref) {
+	    var currentUser = _ref.currentUser;
+	    return {
+	        currentUser: currentUser
+	    };
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	    return {
+	        getCurrentUser: function getCurrentUser(signIn, callback) {
+	            return dispatch((0, _user_actions.getCurrentUser)(signIn, callback));
+	        },
+	        setCurrentUser: function setCurrentUser(user) {
+	            return dispatch((0, _user_actions.setCurrentUser)(user));
+	        }
+	    };
+	};
+
+	var LogInContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_log_in2.default);
+
+	exports.default = LogInContainer;
+
+/***/ },
+/* 298 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _user_actions = __webpack_require__(295);
+
+	var UserReducer = function UserReducer() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    var action = arguments[1];
+
+	    switch (action.type) {
+	        case _user_actions.SET_CURRENT_USER:
+	            return action.currentUser;
+	        default:
+	            return state;
+	    }
+	};
+
+	exports.default = UserReducer;
 
 /***/ }
 /******/ ]);

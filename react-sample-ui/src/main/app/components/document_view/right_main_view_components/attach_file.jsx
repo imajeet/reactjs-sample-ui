@@ -1,5 +1,4 @@
 import React from 'react';
-import {attachFile} from '../../../actions/tree_actions';
 
 const initialState = {
   title: "",
@@ -36,12 +35,11 @@ class AttachFile extends React.Component {
 
   _handleSubmit(e) {
     e.preventDefault();
-    let dispatch = this.props.dispatch;
+    let currentNode = this.props.fileTree.currentNode;
     let callback = () => {
       this.setState(initialState);
-      dispatch(this.props.setCurrentNode(this.props.currentNode));
     };
-    attachFile(this.props.currentNode, this.state, callback)(dispatch);
+    this.props.attachFile(currentNode, this.state, callback);
   }
 
   render() {

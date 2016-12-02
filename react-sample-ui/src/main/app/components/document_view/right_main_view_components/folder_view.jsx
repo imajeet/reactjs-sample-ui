@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 class FolderView extends React.Component {
     constructor(props) {
         super(props);
@@ -24,7 +23,6 @@ class FolderView extends React.Component {
 
     render() {
         let node = this.props.fileTree.currentNode;
-        let fileProperties = node.item.properties;
         let childNodes = node.children;
         let list = Object.keys(childNodes).map((id) => {
             return (

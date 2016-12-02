@@ -1,6 +1,5 @@
 import React from 'react';
 import {hashHistory} from 'react-router';
-import NuxeoUtils from '../utils/nuxeo_utils.js';
 
 class LogIn extends React.Component {
   constructor(props) {
@@ -24,7 +23,11 @@ class LogIn extends React.Component {
 
   _submitForm(e){
     e.preventDefault();
-    NuxeoUtils.signIn(this.state, this._directToDashboard);
+    let callback = (user) => {
+      this.props.setCurrentUser(user);
+      this._directToDashboard();
+    };
+    this.props.getCurrentUser(this.state, callback);
   }
 
   render() {
@@ -55,4 +58,4 @@ class LogIn extends React.Component {
 
 }
 
-module.exports = LogIn;
+export default LogIn;

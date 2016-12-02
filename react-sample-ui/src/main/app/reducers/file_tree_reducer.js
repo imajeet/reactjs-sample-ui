@@ -7,6 +7,7 @@ import {
     DELETE_NODE,
     CREATE_NODE,
     ATTACH_FILE,
+    SET_PROPERTY,
 } from '../actions/tree_actions';
 
 const defaultState = {
@@ -27,13 +28,16 @@ const FileTreeReducer = (state = defaultState, action) => {
             return merge({}, state, { root: state.root });
         case CREATE_NODE:
             action.parentNode.addChild(action.childNode);
-            return state;
+            return merge({}, state, { root: state.root });
         case DELETE_NODE:
             action.node.parent.removeChild(action.node);
-            return state;
+            return merge({}, state, { root: state.root });
         case ATTACH_FILE:
             action.node.item = action.newDoc;
-            return state;
+            return merge({}, state, { root: state.root });
+        case SET_PROPERTY:
+            action.node[action.property] = action.value;
+            return merge({}, state, { root: state.root });
         default:
             return state;
     }

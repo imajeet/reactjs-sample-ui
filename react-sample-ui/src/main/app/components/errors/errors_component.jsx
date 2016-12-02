@@ -6,12 +6,10 @@ class ErrorsComponent extends React.Component {
     }
 
     render() {
-
         let errors;
         if (this.props.errors.length > 0) {
             errors = this.props.errors[0].message;
         }
-
         return (
             <div className="main-wrapper">
                 <div className="error-messages">{errors}</div>

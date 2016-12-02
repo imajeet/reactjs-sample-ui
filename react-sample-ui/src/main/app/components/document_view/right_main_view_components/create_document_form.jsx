@@ -38,10 +38,9 @@ class CreateDocument extends React.Component {
             },
         };
         let parentNode = this.props.fileTree.currentNode;
-        let callback = this.setState({
-            title: "",
-            description: ""
-        });
+        let callback = () => {
+            this.setState({title: "", description: ""});
+        };
         this.props.createDocument(parentNode, doc, callback);
     }
 

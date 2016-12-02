@@ -22,8 +22,9 @@ import ShowWorkFlow from './right_main_view_components/show_workflow.jsx';
 import AttachFile from './right_main_view_components/attach_file.jsx';
 import EditDocument from './right_main_view_components/edit_document.jsx'
 
-const mapStateToProps = ({ fileTree }) => ({
-    fileTree: fileTree
+const mapStateToProps = ({ fileTree, currentUser }) => ({
+    fileTree: fileTree,
+    currentUser: currentUser
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -33,8 +34,8 @@ const mapDispatchToProps = (dispatch) => ({
     fetchChildren: (parentNode) => dispatch(fetchChildren(parentNode)),
     deleteDocument: (node, callback) => dispatch(deleteDocument(node, callback)),
     createDocument: (parentNode, doc, callback) => dispatch(createDocument(parentNode, doc, callback)),
-    attachFile: (node, upload) => dispatch(attachFile(node, upload)),
-    dispatch: (action) => dispatch(action)
+    attachFile: (node, upload, callback) => dispatch(attachFile(node, upload, callback)),
+    dispatch: (action) => dispatch(action),
 });
 
 

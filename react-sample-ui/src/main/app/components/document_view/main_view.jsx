@@ -1,19 +1,10 @@
 import React from 'react';
-// store
-import DocumentStore from '../../data/document_store.js';
-// components
-
-
-
 //containers
 import { FileTreeContainer, RightMainViewContainer } from './document_view_container';
 
 class MainView extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      user: DocumentStore.getUser(),
-    };
   }
 
   componentDidMount() {
@@ -43,7 +34,7 @@ class MainView extends React.Component {
       <div className="main-wrapper">
         <div className="side-panel-wrapper">
           <div className="side-panel-profile">
-            {this.state.user.id}
+            {this.props.currentUser.id}
           </div>
           {tree}
         </div>

@@ -1,6 +1,5 @@
 const Nuxeo = require('nuxeo/dist/nuxeo');
-import {merge} from 'lodash';
-import DocumentStore from '../data/document_store';
+import { merge } from 'lodash';
 import { flashErrors } from '../actions/error_actions'
 
 let _nuxeo;
@@ -22,35 +21,21 @@ const DEFAULTS = {
 };
 
 const NuxeoUtils = {
-  signIn(logIn, directToDashboard){
-    let nuxeo = new Nuxeo({
-      baseURL: logIn.url,
-      // auth: {
-      //   method: 'basic',
-      //   username: logIn.username,
-      //   password: logIn.password
-      // },
-    });
-    _nuxeo = nuxeo;
-    // _nuxeo.header('X-NXDocumentProperties', '*');
-    window.nuxeo = _nuxeo;
-    let success = (res) => {
-        DocumentStore.setUser(res);
-        directToDashboard();
-    };
-    NuxeoUtils.crudUtil({
-        success: success
-    });
-   // _nuxeo.enrichers({document: ['subtypes']});
-    // _nuxeo.login()
-    //   .then(function(res) {
-    //     DocumentStore.setUser(res);
-    //     directToDashboard();
-    //   })
-    //   .catch(function(error) {
-    //     throw error;
-    //   });
+  signIn(signIn, callback) {
+      let nuxeo = new Nuxeo({
+          baseURL: signIn.url,
+          auth: {
+            method: 'basic',
+            username: signIn.username,
+            password: signIn.password
+         },
+      });
+      _nuxeo = nuxeo;
+      _nuxeo.login().then(callback);
   },
+
+    // _nuxeo.header('X-NXDocumentProperties', '*');
+    // _nuxeo.enrichers({document: ['subtypes']});
 
   batchUpload(params){
       var blob = new Nuxeo.Blob({
@@ -95,15 +80,6 @@ const NuxeoUtils = {
               return node.item.save({ schemas: ['dublincore', 'file'] });
           })
           .then(success);
-  },
-
-
-  getUser(username) {
-      _nuxeo.users()
-          .fetch(username)
-          .then((res) => {
-             console.log(res);
-          });
   },
 
   crudUtil(params) {
@@ -175,7 +151,3 @@ const NuxeoUtils = {
 };
 
 export default NuxeoUtils;
-Object.keys(NuxeoUtils).forEach((key) => {
-   window[key] = NuxeoUtils[key];
-});
-

@@ -1,6 +1,5 @@
 import NuxeoUtils from '../utils/nuxeo_utils';
 import TreeNode from '../tree_node/tree_node';
-import DocumentStore from '../data/document_store';
 
 export const SET_CURRENT_NODE = "SET_CURRENT_NODE";
 export const SET_ROOT_NODE = "SET_ROOT_NODE";
@@ -8,6 +7,7 @@ export const ADD_CHILD_NODES = "ADD_CHILD_NODES";
 export const DELETE_NODE = "DELETE_NODE";
 export const CREATE_NODE = "CREATE_NODE";
 export const ATTACH_FILE = "ATTACH_FILE";
+export const SET_PROPERTY = "SET_PROPERTY";
 
 
 export function setCurrentNode(node) {
@@ -82,7 +82,6 @@ export function createDocument(parentNode, doc, callback){
                     parentNode: parentNode,
                     childNode: childNode,
                 });
-                dispatch(setCurrentNode(parentNode));
                 if (callback) {
                     callback()
                 }
@@ -107,44 +106,42 @@ export function attachFile(node, upload, callback) {
     }
 }
 
+export function setProperty(node, property, value) {
+    return {
+        type: SET_PROPERTY,
+        node: node,
+        property: property,
+        value: value
+    }
+}
 
-const TreeActions = {
+ // export function editDocument(node, doc) {
+ //        let success = (doc) => {
+ //        };
+ //        let path = node.item.uid;
+ //        NuxeoUtils.crudUtil({
+ //           type: 'update',
+ //           path:  path,
+ //           data:  doc,
+ //           success: success
+ //        });
+ // }
 
-    editDocument(node, doc){
-        let success = (doc) => {
-        };
-        let path = node.item.uid;
-        NuxeoUtils.crudUtil({
-           type: 'update',
-           path:  path,
-           data:  doc,
-           success: success
-        });
-    },
-
-    attachFile(node, upload) {
-        let success = (res) => {
-            node.item = res;
-            TreeActions.setWorkingNode(node);
-        };
-        NuxeoUtils.attachFile(node, upload, success);
-    },
-
-};
+const TreeActions = {};
 
 ["acl", "workflow", "task", "audit"].forEach((adapter) => {
    TreeActions[`get${adapter}`] = (node) => {
-       let success = (res) => {
-           DocumentStore.setProperty(node, res, adapter);
-       };
-
-       let path = node.item.uid;
-       NuxeoUtils.crudUtil({
-          method:"get",
-          path: path,
-          adapter: `${adapter}`,
-          success: success
-       });
+       return (dispatch) => {
+           let success = (res) => {
+               dispatch(setProperty(node, adapter, res));
+           };
+           NuxeoUtils.crudUtil({
+               method: "get",
+               path: node.item.uid,
+               adapter: `${adapter}`,
+               success: success
+           });
+       }
    }
 });
 
