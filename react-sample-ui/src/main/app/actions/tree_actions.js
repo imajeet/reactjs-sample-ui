@@ -32,10 +32,12 @@ export function setRootNode() {
 
 export function fetchChildren(node) {
     return (dispatch) => {
+        if (!node.fetchedChildren) {
             NuxeoUtils.crudUtil({
                 path: node.item.uid,
                 adapter: 'children',
                 success: (docs) => {
+                    node.fetchedChildren = true;
                     let childNodes = docs.entries.map((entry) => {
                         return new TreeNode(entry)
                     });
@@ -46,6 +48,7 @@ export function fetchChildren(node) {
                     })
                 }
             });
+        }
 
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
-import { fetchChildren } from '../../actions/tree_actions';
 import DocumentTypeConstants from '../../constants/document_type_constants';
+import { FileTreeContainer } from './document_view_container';
 
 class FileTree extends React.Component {
   constructor(props) {
@@ -10,26 +10,24 @@ class FileTree extends React.Component {
   _showChildren(e) {
     e.stopPropagation();
     let node = this.props.node;
-    if (node.showChildren && node === this.props.currentNode) {
+    if (node.showChildren && node === this.props.fileTree.currentNode) {
       node.showChildren = false;
     } else {
       node.showChildren = true;
-      if (Object.keys(node.children).length === 0){
-        this.props.dispatch(fetchChildren(node))
-      }
+      this.props.fetchChildren(node);
       this.props.setCurrentNode(node);
     }
     this.forceUpdate();
   }
 
   render() {
-    let workingNode = this.props.currentNode;
+    let currentNode = this.props.fileTree.currentNode;
     let node = this.props.node;
     let containers = DocumentTypeConstants.containers.concat(DocumentTypeConstants.defaultContainers);
     let subFiles;
     let showChildren;
     let highlightWorking;
-    if (workingNode === node) {
+    if (currentNode === node) {
       highlightWorking = 'highlight-working';
     }
 
@@ -41,12 +39,7 @@ class FileTree extends React.Component {
       subFiles = keys.map((childId) => {
         return (
           <li key={childId}>
-            <FileTree
-                node={node.children[childId]}
-                setCurrentNode={this.props.setCurrentNode}
-                currentNode={this.props.currentNode}
-                dispatch={this.props.dispatch}
-            />
+            <FileTreeContainer node={node.children[childId]} />
           </li>
         );
       });

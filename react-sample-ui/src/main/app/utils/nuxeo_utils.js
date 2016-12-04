@@ -24,14 +24,18 @@ const NuxeoUtils = {
   signIn(signIn, callback) {
       let nuxeo = new Nuxeo({
           baseURL: signIn.url,
-          auth: {
-            method: 'basic',
-            username: signIn.username,
-            password: signIn.password
-         },
+         //  auth: {
+         //    method: 'basic',
+         //    username: signIn.username,
+         //    password: signIn.password
+         // },
       });
       _nuxeo = nuxeo;
-      _nuxeo.login().then(callback);
+      NuxeoUtils.crudUtil({
+          success: function (res) {
+              _nuxeo.login().then(callback);
+          }
+      });
   },
 
     // _nuxeo.header('X-NXDocumentProperties', '*');

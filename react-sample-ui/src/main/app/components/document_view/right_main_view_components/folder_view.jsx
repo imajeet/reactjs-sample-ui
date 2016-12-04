@@ -19,6 +19,7 @@ class FolderView extends React.Component {
         node.showChildren = true;
         this.props.setCurrentNode(node);
         this.props.fetchChildren(node);
+
     }
 
     render() {

@@ -4,6 +4,7 @@ class TreeNode {
         this.uid = item.uid;
         this.parent = undefined;
         this.showChildren = false;
+        this.fetchedChildren = false;
         //adapter parameters
         this.children = {};
         this.acl = undefined;

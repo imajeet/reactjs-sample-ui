@@ -17,12 +17,7 @@ class MainView extends React.Component {
     let currentNode = this.props.fileTree.currentNode;
     if (this.props.fileTree.root.item) {
       tree = (
-        <FileTreeContainer
-            node={this.props.fileTree.root}
-            setCurrentNode={this.props.setCurrentNode}
-            currentNode={currentNode}
-            dispatch={this.props.dispatch}
-        />
+        <FileTreeContainer node={this.props.fileTree.root}/>
       );
     }
 
