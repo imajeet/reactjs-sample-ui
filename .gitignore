@@ -1,3 +1,5 @@
 node_modules
+errorShots
+WDIO.xunitchrome.0-0.xml
 target
 .DS_Store
