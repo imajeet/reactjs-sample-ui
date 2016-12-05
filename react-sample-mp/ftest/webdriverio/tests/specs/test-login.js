@@ -30,7 +30,7 @@ const correctLogIn = function (browser) {
 // });
 
 describe('Nuxeo successful login page', function() {
-    it.only('should login successfully when given correct login', function() {
+    it('should login successfully when given correct login', function() {
         correctLogIn(browser);
         browser.pause(7000);
         // wait for text blocking menu to clear
@@ -53,4 +53,4 @@ describe('Nuxeo fail login page', function() {
     });
 });
 
-export default correctLogIn;
+module.exports = correctLogIn;

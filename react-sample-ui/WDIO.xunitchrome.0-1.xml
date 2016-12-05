@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="nuxeo_successful_login_page" timestamp="2016-12-05T15:55:01" time="12.425" tests="1" failures="0" errors="0" skipped="0">
+    <properties>
+      <property name="specId" value="09b668f610d7cede598e6ff9213d6621"/>
+      <property name="suiteName" value="Nuxeo successful login page"/>
+      <property name="capabilities" value="chrome"/>
+    </properties>
+    <testcase classname="chrome.Nuxeo successful login page" name="should login successfully when given correct login" time="12.423">
+      <system-out>
+        <![CDATA[
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/url - {"url":"http://localhost:8080/"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":384072942,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/elements - {"using":"css selector","value":"#username.login_input"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1312141058,"value":[{"ELEMENT":"0"}],"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/0/clear - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1716872569,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/0/value - {"value":["A","d","m","i","n","i","s","t","r","a","(3 more items)"]}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1813644549,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/elements - {"using":"css selector","value":"#password.login_input"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1504446308,"value":[{"ELEMENT":"1"}],"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/1/clear - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":981659372,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/1/value - {"value":["A","d","m","i","n","i","s","t","r","a","(3 more items)"]}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":2008099432,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element - {"using":"css selector","value":".login_button"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1262431158,"value":{"ELEMENT":"2"},"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/2/click - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1913754258,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element - {"using":"id","value":"nxw_userMenuActions_dropDownMenu"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1598683058,"value":{"ELEMENT":"3"},"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/3/click - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":567637081,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element - {"using":"id","value":"nxw_non_anonymous_logout"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":319129934,"value":{"ELEMENT":"4"},"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/4/click - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1845370046,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+]]>
+      </system-out>
+    </testcase>
+  </testsuite>
+  <testsuite name="nuxeo_fail_login_page" timestamp="2016-12-05T15:55:13" time="1.193" tests="1" failures="0" errors="0" skipped="0">
+    <properties>
+      <property name="specId" value="09b668f610d7cede598e6ff9213d6621"/>
+      <property name="suiteName" value="Nuxeo fail login page"/>
+      <property name="capabilities" value="chrome"/>
+    </properties>
+    <testcase classname="chrome.Nuxeo fail login page" name="should not log in when given incorrect login" time="1.193">
+      <system-out>
+        <![CDATA[
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/url - {"url":"http://localhost:8080/"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":2098893524,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/elements - {"using":"css selector","value":"#username.login_input"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":2011645586,"value":[{"ELEMENT":"5"}],"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/5/clear - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1209532121,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/5/value - {"value":["A","d","m","i","n","i","s","t","r","a","(3 more items)"]}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1427181705,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/elements - {"using":"css selector","value":"#password.login_input"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":2092217549,"value":[{"ELEMENT":"6"}],"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/6/clear - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":824880671,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/6/value - {"value":["g","i","b","b","e","r","i","s","h"]}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1186754517,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element - {"using":"css selector","value":".login_button"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":460634835,"value":{"ELEMENT":"7"},"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/7/click - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1111451564,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: POST http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/elements - {"using":"css selector","value":".feedbackmessage.errormessage"}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":646017954,"value":[{"ELEMENT":"8"}],"class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: GET http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77/element/8/text - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":57045600,"value":"Invalid username or password","class":"org.openqa.selenium.remote.Response","status":0}
+COMMAND: DELETE http://127.0.0.1:4444/wd/hub/session/c4249964-3f50-4094-9799-683f9b582c77 - {}
+RESULT: {"state":"success","sessionId":"c4249964-3f50-4094-9799-683f9b582c77","hCode":1039856381,"value":null,"class":"org.openqa.selenium.remote.Response","status":0}
+]]>
+      </system-out>
+    </testcase>
+  </testsuite>
+</testsuites>
