@@ -4,21 +4,21 @@ import ReactRouter, {Link, Router, Route, IndexRoute, hashHistory} from 'react-r
 import { Provider } from 'react-redux';
 
 // components
-import LogIn from './components/log_in';
-import MainView from './components/main_view';
+import LogInContainer from './components/log_in/log_in_container.js';
 import ErrorsContainer from './components/errors/errors_container.jsx';
-
-// data
-import DocumentStore from './data/document_store';
+import Containers from './components/document_view/document_view_container';
+console.log(Containers)
+import { MainViewContainer } from './components/document_view/document_view_container';
 
 // store
 import configureStore from './store/store';
-
 //utils
 import NuxeoUtils from './utils/nuxeo_utils';
+const store = configureStore();
+NuxeoUtils.addStore(store);
 
 let redirectConditions = function (nextState, replace) {
-  if (!DocumentStore.getUser()) {
+  if (!store.getState().currentUser.id) {
     replace("/");
   }
 };
@@ -28,8 +28,8 @@ const Root = ({ store }) => {
         <Provider store={store}>
             <ErrorsContainer>
                 <Router history={hashHistory}>
-                    <Route path="/" component={LogIn}/>
-                    <Route path="/documents" component={MainView} onEnter={redirectConditions}/>
+                    <Route path="/" component={LogInContainer}/>
+                    <Route path="/documents" component={ MainViewContainer } onEnter={ redirectConditions }/>
                 </Router>
             </ErrorsContainer>
         </Provider>
@@ -37,8 +37,6 @@ const Root = ({ store }) => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    const store = configureStore();
     const root = document.getElementById('root');
-    NuxeoUtils.addStore(store);
     ReactDOM.render(<Root store={store} />, root);
 });

@@ -1,12 +1,13 @@
 import React from 'react';
-import TreeActions from '../../actions/tree_actions.js';
+import TreeActions from '../../../actions/tree_actions.js';
 
 class EditDocument extends React.Component {
     constructor(props) {
         super(props);
+        let document = this.props.fileTree.currentNode.item;
         this.state = {
-            title: `${this.props.workingNode.item.title}`,
-            description: `${this.props.workingNode.item.description}`
+            title: `${document.properties['dc:title']}`,
+            description: `${document.properties['dc:description']}`
         };
     }
 
@@ -18,20 +19,18 @@ class EditDocument extends React.Component {
 
     _handleSubmit(e) {
         e.preventDefault();
-        let doc = this.props.workingNode.item;
+        let doc = this.props.fileTree.currentNode.item;
 
         // doc.set({ 'dc:title' : this.state.title});
         // doc.set({'dc:description': this.state.description});
 
         doc.properties['dc:title'] = this.state.title;
         doc.properties['dc:description'] = this.state.description;
-        debugger
         TreeActions.editDocument(this.props.workingNode, doc);
         // this.setState({title:"", description: ""});
     }
 
     render() {
-
         return (
             <div className="right-main-view-show-working-button">
                 <h4>Edit {this.state.type}</h4>

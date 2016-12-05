@@ -1,14 +1,17 @@
 import React from 'react';
-import TreeActions from '../../actions/tree_actions.js';
+import TreeActions from '../../../actions/tree_actions.js';
 
 class ShowAudit extends React.Component {
     constructor(props){
         super(props);
-        TreeActions.getaudit(this.props.workingNode);
+    }
+
+    componentDidMount() {
+        TreeActions.getaudit(this.props.fileTree.currentNode)(this.props.dispatch);
     }
 
     render() {
-        let node = this.props.workingNode;
+        let node = this.props.fileTree.currentNode;
         let auditList;
         if (node.audit) {
             auditList = node.audit.entries.map((el, index) => {

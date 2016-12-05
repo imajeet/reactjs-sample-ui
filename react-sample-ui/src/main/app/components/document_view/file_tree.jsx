@@ -1,6 +1,6 @@
 import React from 'react';
-import TreeActions from '../actions/tree_actions';
-import DocumentTypeConstants from '../constants/document_type_constants';
+import DocumentTypeConstants from '../../constants/document_type_constants';
+import { FileTreeContainer } from './document_view_container';
 
 class FileTree extends React.Component {
   constructor(props) {
@@ -9,17 +9,25 @@ class FileTree extends React.Component {
 
   _showChildren(e) {
     e.stopPropagation();
-    TreeActions.toggleShowChildren(this.props.node, this.forceUpdate.bind(this));
+    let node = this.props.node;
+    if (node.showChildren && node === this.props.fileTree.currentNode) {
+      node.showChildren = false;
+    } else {
+      node.showChildren = true;
+      this.props.fetchChildren(node);
+      this.props.setCurrentNode(node);
+    }
+    this.forceUpdate();
   }
 
-  render(){
-    let workingNode = TreeActions.getWorkingNode();
+  render() {
+    let currentNode = this.props.fileTree.currentNode;
     let node = this.props.node;
     let containers = DocumentTypeConstants.containers.concat(DocumentTypeConstants.defaultContainers);
     let subFiles;
     let showChildren;
     let highlightWorking;
-    if (workingNode === node) {
+    if (currentNode === node) {
       highlightWorking = 'highlight-working';
     }
 
@@ -31,7 +39,7 @@ class FileTree extends React.Component {
       subFiles = keys.map((childId) => {
         return (
           <li key={childId}>
-            <FileTree node={node.children[childId]} />
+            <FileTreeContainer node={node.children[childId]} />
           </li>
         );
       });
@@ -43,7 +51,6 @@ class FileTree extends React.Component {
     } else {
       title = node.item.title;
     }
-
     return (
       <div className={`file-tree-view`} >
            <div className="file-tree-title-wrapper" onClick={this._showChildren.bind(this)}>
@@ -60,4 +67,4 @@ class FileTree extends React.Component {
   }
 }
 
-module.exports = FileTree;
+export default FileTree

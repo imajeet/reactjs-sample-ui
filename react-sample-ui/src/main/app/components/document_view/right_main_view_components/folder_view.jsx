@@ -1,5 +1,4 @@
 import React from 'react';
-import TreeActions from '../../actions/tree_actions';
 
 class FolderView extends React.Component {
     constructor(props) {
@@ -8,23 +7,28 @@ class FolderView extends React.Component {
 
     _deleteFile(node, e){
         e.preventDefault();
-        TreeActions.deleteDocument(node);
+        let callback = () => {
+            this.props.setCurrentNode(this.props.fileTree.currentNode)
+        };
+        this.props.deleteDocument(node, callback);
     }
 
     _setWorkingFile(node, e){
         e.preventDefault();
-        TreeActions.setWorkingNode(node);
-        TreeActions.fetchChildren(node);
+        node.parent.showChildren = true;
+        node.showChildren = true;
+        this.props.setCurrentNode(node);
+        this.props.fetchChildren(node);
+
     }
 
     render() {
-        let file = TreeActions.getWorkingNode();
-        let fileProperties = file.item.properties;
-        let childNodes = file.children;
+        let node = this.props.fileTree.currentNode;
+        let childNodes = node.children;
         let list = Object.keys(childNodes).map((id) => {
             return (
                 <li key={id} className="file-view-list-item">
-                    <button onClick={this._deleteFile.bind(null, childNodes[id])} className="submit-button delete-button">Delete</button>
+                    <button onClick={this._deleteFile.bind(this, childNodes[id])} className="submit-button delete-button">Delete</button>
                     <div onClick={this._setWorkingFile.bind(this, childNodes[id])}>
                         {childNodes[id].item.title}
                     </div>

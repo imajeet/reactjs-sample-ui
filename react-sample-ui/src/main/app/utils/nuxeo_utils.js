@@ -1,7 +1,6 @@
 const Nuxeo = require('nuxeo/dist/nuxeo');
-import {merge} from 'lodash';
-import DocumentStore from '../data/document_store';
-import { receiveErrors, clearErrors } from '../actions/error_actions'
+import { merge } from 'lodash';
+import { flashErrors } from '../actions/error_actions'
 
 let _nuxeo;
 let _store;
@@ -16,45 +15,31 @@ const DEFAULTS = {
     success: (res) => {
         console.log(res)
     },
-    fail: (res,xhr) => {
-        _store.dispatch(receiveErrors(res,xhr));
-        setTimeout(function() {
-            _store.dispatch(clearErrors())
-        }, 1500);
+    fail: (res) => {
+        flashErrors(res)(_store.dispatch);
     }
 };
 
 const NuxeoUtils = {
-  signIn(logIn, directToDashboard){
-    let nuxeo = new Nuxeo({
-      baseURL: logIn.url,
-      // auth: {
-      //   method: 'basic',
-      //   username: logIn.username,
-      //   password: logIn.password
-      // },
-    });
-    _nuxeo = nuxeo;
-    let success = (res) => {
-        DocumentStore.setUser(res);
-        directToDashboard();
-    };
-    NuxeoUtils.crudUtil({
-        success: success
-    });
-
-
-
-   _nuxeo.enrichers({document: ['subtypes']});
-    // _nuxeo.login()
-    //   .then(function(res) {
-    //     DocumentStore.setUser(res);
-    //     directToDashboard();
-    //   })
-    //   .catch(function(error) {
-    //     throw error;
-    //   });
+  signIn(signIn, callback) {
+      let nuxeo = new Nuxeo({
+          baseURL: signIn.url,
+         //  auth: {
+         //    method: 'basic',
+         //    username: signIn.username,
+         //    password: signIn.password
+         // },
+      });
+      _nuxeo = nuxeo;
+      NuxeoUtils.crudUtil({
+          success: function (res) {
+              _nuxeo.login().then(callback);
+          }
+      });
   },
+
+    // _nuxeo.header('X-NXDocumentProperties', '*');
+    // _nuxeo.enrichers({document: ['subtypes']});
 
   batchUpload(params){
       var blob = new Nuxeo.Blob({
@@ -89,25 +74,16 @@ const NuxeoUtils = {
   },
 
 
-  attachFile(docToAttachTo, upload, success) {
+  attachFile(node, upload, success) {
     let blob = new Nuxeo.Blob({content: upload.file});
       const batch = _nuxeo.batchUpload();
       _nuxeo.Promise.all([batch.upload(blob)])
           .then((values) => {
               let batchBlob = values[0].blob;
-              docToAttachTo.item.set({ 'file:content': batchBlob });
-              return docToAttachTo.item.save({ schemas: ['dublincore', 'file'] });
+              node.item.set({ 'file:content': batchBlob });
+              return node.item.save({ schemas: ['dublincore', 'file'] });
           })
           .then(success);
-  },
-
-
-  getUser(username) {
-      _nuxeo.users()
-          .fetch(username)
-          .then((res) => {
-             console.log(res);
-          });
   },
 
   crudUtil(params) {
@@ -119,10 +95,13 @@ const NuxeoUtils = {
       if (finalParams.operation) {
           path += `/${finalParams.operation}`;
       }
+
       switch (finalParams.method.toLowerCase()) {
+
           case "get":
           _nuxeo.repository()
               .schemas(finalParams.schemas)
+              .headers({'X-NXenrichers.document':'subtypes'})
               .fetch(path)
               .then(finalParams.success)
               .catch(finalParams.fail);
@@ -163,13 +142,16 @@ const NuxeoUtils = {
 
   addStore(store){
       _store = store;
+  },
+
+  getSubTypes() {
+      _nuxeo.request('/default-domain')
+          .header('X-NXenrichers.document', 'subtypes')
+          .fetch()
+          .then((res) => {
+              debugger
+          })
   }
 };
 
 export default NuxeoUtils;
-
-Object.keys(NuxeoUtils).forEach((key) => {
-   window[key] = NuxeoUtils[key];
-    
-});
-
