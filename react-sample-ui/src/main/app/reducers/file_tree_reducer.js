@@ -6,6 +6,7 @@ import {
     ADD_CHILD_NODES,
     DELETE_NODE,
     CREATE_NODE,
+    UPDATE_NODE,
     ATTACH_FILE,
     SET_PROPERTY,
 } from '../actions/tree_actions';
@@ -31,6 +32,9 @@ const FileTreeReducer = (state = defaultState, action) => {
             return merge({}, state, { root: state.root });
         case DELETE_NODE:
             action.node.parent.removeChild(action.node);
+            return merge({}, state, { root: state.root });
+        case UPDATE_NODE:
+            action.node.item = action.newDoc;
             return merge({}, state, { root: state.root });
         case ATTACH_FILE:
             action.node.item = action.newDoc;

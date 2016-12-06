@@ -1,48 +1,76 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>react.sample.ui</groupId>
-    <artifactId>react-ui-parent</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <!-- XXX-INHERITANCE: if not inheriting from Nuxeo, see the following related comments -->
+    <parent>
+        <groupId>react.sample.ui</groupId>
+        <artifactId>react-ui-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>parent-marketplace</artifactId>
+    <packaging>pom</packaging>
+    <name>React-Sample-UI</name>
+    <description>Convenience POM for running sub-modules</description>
     <version>1.0-SNAPSHOT</version>
-  </parent>
 
-  <artifactId>nuxeo-app-redo-package</artifactId>
-  <packaging>zip</packaging>
-  <name>The react ui module</name>
+    <properties>
+        <some.password>setTheValueInYourSettings</some.password>
+    </properties>
 
-  <dependencies>
-    <!-- Base distribution(s) for the MP -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap</artifactId>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
+    <modules>
+        <module>react-mp</module>
+    </modules>
 
-    <!-- Additional bundles to be deployed by the MP -->
-    <dependency>
-      <groupId>react.sample.ui</groupId>
-      <artifactId>react-ui</artifactId>
-    </dependency>
-  </dependencies>
+    <profiles>
+        <profile>
+            <id>ftest</id>
+            <modules>
+                <module>ftest/webdriverio</module>
+            </modules>
+        </profile>
+    </profiles>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.nuxeo.build</groupId>
-        <artifactId>ant-assembly-maven-plugin</artifactId>
-        <configuration>
-          <buildFiles>
-            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-          </buildFiles>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+
+
+    <repositories>
+        <repository>
+            <id>public</id>
+            <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>public-snapshot</id>
+            <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!--<repository>-->
+            <!--<id>nuxeo-studio</id>-->
+            <!--<url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>-->
+            <!--<releases>-->
+                <!--<enabled>true</enabled>-->
+            <!--</releases>-->
+            <!--<snapshots>-->
+                <!--<updatePolicy>always</updatePolicy>-->
+                <!--<enabled>true</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+    </repositories>
+
+    <scm>
+        <connection>scm:git:git://github.com/nuxeo/nuxeo-marketplace-sample.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-marketplace-sample.git</developerConnection>
+        <url>https://github.com/nuxeo/nuxeo-marketplace-sample</url>
+    </scm>
 
 </project>

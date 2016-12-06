@@ -7,6 +7,7 @@ export const ADD_CHILD_NODES = "ADD_CHILD_NODES";
 export const DELETE_NODE = "DELETE_NODE";
 export const CREATE_NODE = "CREATE_NODE";
 export const ATTACH_FILE = "ATTACH_FILE";
+export const UPDATE_NODE = "UPDATE_NODE";
 export const SET_PROPERTY = "SET_PROPERTY";
 
 
@@ -93,6 +94,26 @@ export function createDocument(parentNode, doc, callback){
     }
 }
 
+export function updateDocument(node, callback){
+    return (dispatch) => {
+        NuxeoUtils.crudUtil({
+            method: 'update',
+            path: node.item.uid,
+            data: node.item,
+            success: (doc) => {
+                dispatch({
+                    type: UPDATE_NODE,
+                    node: node,
+                    newDoc: doc
+                });
+            }
+        });
+        if (callback) {
+            callback();
+        }
+    }
+}
+
 export function attachFile(node, upload, callback) {
     return function(dispatch) {
         let success = (newDoc) => {
@@ -118,22 +139,8 @@ export function setProperty(node, property, value) {
     }
 }
 
- // export function editDocument(node, doc) {
- //        let success = (doc) => {
- //        };
- //        let path = node.item.uid;
- //        NuxeoUtils.crudUtil({
- //           type: 'update',
- //           path:  path,
- //           data:  doc,
- //           success: success
- //        });
- // }
-
-const TreeActions = {};
-
-["acl", "workflow", "task", "audit"].forEach((adapter) => {
-   TreeActions[`get${adapter}`] = (node) => {
+const TreeActions = ["acl", "workflow", "task", "audit"].reduce((methods, adapter) => {
+   methods[`get${adapter}`] = (node) => {
        return (dispatch) => {
            let success = (res) => {
                dispatch(setProperty(node, adapter, res));
@@ -145,7 +152,8 @@ const TreeActions = {};
                success: success
            });
        }
-   }
-});
+   };
+   return methods
+}, {});
 
 export default TreeActions;
