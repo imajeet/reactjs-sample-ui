@@ -1,4 +1,4 @@
-<project name="nightwatch-tests" xmlns:artifact="urn:nuxeo-artifact" xmlns:if="ant:if" xmlns:unless="ant:unless">
+<project name="webdriver-tests" xmlns:artifact="urn:nuxeo-artifact" xmlns:if="ant:if" xmlns:unless="ant:unless">
     <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build"/>
     <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact"/>
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
@@ -11,7 +11,7 @@
     <import file="${out.dir}/nuxeo-ftest.xml"/>
 
     <!-- Instruction for installing the MP to be tested -->
-    <property name="mp.install" value="file:${out.dir}/thesource-marketplace-${maven.project.version}.zip"/>
+    <property name="mp.install" value="file:${out.dir}/sampleUI-marketplace-${maven.project.version}.zip"/>
     <!-- Override default prepare-environment target to make it download your MP -->
     <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss">
         <condition property="cmd.npm" value="npm.cmd" else="npm">
@@ -24,7 +24,7 @@
             <arg value="start"/>
         </exec>
         <copy todir="${out.dir}">
-            <artifact:file key="com.cvs.thesource:thesource-marketplace::zip"/>
+            <artifact:file key="react.sample.ui:reactjs-sample-ui-marketplace::zip"/>
         </copy>
     </target>
 

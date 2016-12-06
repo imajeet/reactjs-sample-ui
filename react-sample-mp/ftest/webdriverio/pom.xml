@@ -5,12 +5,12 @@
     <parent>
         <groupId>react.sample.ui</groupId>
         <artifactId>parent-marketplace</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>webdriver-io</artifactId>
-    <name>Functional tests with NightWatch</name>
+    <name>Functional tests with Webdriver</name>
     <description>Functional tests with Webdriver</description>
 
     <dependencies>
@@ -22,9 +22,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.cvs.thesource</groupId>
-            <artifactId>thesource-marketplace</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>react.sample.ui</groupId>
+            <artifactId>nuxeo-app-redo-package</artifactId>
+            <version>1.0-SNAPSHOT</version>
             <type>zip</type>
             <scope>test</scope>
         </dependency>
