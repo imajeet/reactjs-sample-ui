@@ -70,9 +70,7 @@
 
 	var _document_view_container = __webpack_require__(274);
 
-	var _document_view_container2 = _interopRequireDefault(_document_view_container);
-
-	var _store = __webpack_require__(290);
+	var _store = __webpack_require__(275);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -82,16 +80,13 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	console.log(_document_view_container2.default);
+	// store
+	var store = (0, _store2.default)();
+	//utils
+
 
 	// components
 
-
-	// store
-
-	//utils
-
-	var store = (0, _store2.default)();
 	_nuxeo_utils2.default.addStore(store);
 
 	var redirectConditions = function redirectConditions(nextState, replace) {
@@ -28249,7 +28244,7 @@
 	        switch (finalParams.method.toLowerCase()) {
 
 	            case "get":
-	                _nuxeo.repository().schemas(finalParams.schemas).headers({ 'X-NXenrichers.document': 'subtypes' }).fetch(path).then(finalParams.success).catch(finalParams.fail);
+	                _nuxeo.repository().schemas(finalParams.schemas).headers({ 'X-NXenrichers.document': 'thumbnail' }).fetch(path).then(finalParams.success).catch(finalParams.fail);
 	                break;
 	            case "delete":
 	                _nuxeo.repository().schemas(finalParams.schemas).delete(path).then(finalParams.success).catch(finalParams.fail);
@@ -28273,11 +28268,15 @@
 	        _store = store;
 	    },
 	    getSubTypes: function getSubTypes() {
-	        _nuxeo.request('/default-domain').header('X-NXenrichers.document', 'subtypes').fetch().then(function (res) {
+	        _nuxeo.request('/').enrichers({ 'document': ['subtypes'] }).get().then(function (res) {
 	            debugger;
 	        });
 	    }
 	};
+
+	Object.keys(NuxeoUtils).forEach(function (key) {
+	    window[key] = NuxeoUtils[key];
+	});
 
 	exports.default = NuxeoUtils;
 
@@ -56532,55 +56531,55 @@
 
 	var _reactRedux = __webpack_require__(233);
 
-	var _tree_actions = __webpack_require__(275);
+	var _tree_actions = __webpack_require__(280);
 
 	var _error_actions = __webpack_require__(265);
 
-	var _file_tree = __webpack_require__(277);
+	var _file_tree = __webpack_require__(283);
 
 	var _file_tree2 = _interopRequireDefault(_file_tree);
 
-	var _main_view = __webpack_require__(279);
+	var _main_view = __webpack_require__(285);
 
 	var _main_view2 = _interopRequireDefault(_main_view);
 
-	var _right_main_view = __webpack_require__(280);
+	var _right_main_view = __webpack_require__(286);
 
 	var _right_main_view2 = _interopRequireDefault(_right_main_view);
 
-	var _file_view = __webpack_require__(281);
+	var _file_view = __webpack_require__(287);
 
 	var _file_view2 = _interopRequireDefault(_file_view);
 
-	var _folder_view = __webpack_require__(282);
+	var _folder_view = __webpack_require__(288);
 
 	var _folder_view2 = _interopRequireDefault(_folder_view);
 
-	var _create_document_form = __webpack_require__(283);
+	var _create_document_form = __webpack_require__(289);
 
 	var _create_document_form2 = _interopRequireDefault(_create_document_form);
 
-	var _show_acl = __webpack_require__(284);
+	var _show_acl = __webpack_require__(290);
 
 	var _show_acl2 = _interopRequireDefault(_show_acl);
 
-	var _show_audit = __webpack_require__(285);
+	var _show_audit = __webpack_require__(291);
 
 	var _show_audit2 = _interopRequireDefault(_show_audit);
 
-	var _show_task = __webpack_require__(286);
+	var _show_task = __webpack_require__(292);
 
 	var _show_task2 = _interopRequireDefault(_show_task);
 
-	var _show_workflow = __webpack_require__(287);
+	var _show_workflow = __webpack_require__(293);
 
 	var _show_workflow2 = _interopRequireDefault(_show_workflow);
 
-	var _attach_file = __webpack_require__(288);
+	var _attach_file = __webpack_require__(294);
 
 	var _attach_file2 = _interopRequireDefault(_attach_file);
 
-	var _edit_document = __webpack_require__(289);
+	var _edit_document = __webpack_require__(295);
 
 	var _edit_document2 = _interopRequireDefault(_edit_document);
 
@@ -56615,6 +56614,9 @@
 	        createDocument: function createDocument(parentNode, doc, callback) {
 	            return _dispatch((0, _tree_actions.createDocument)(parentNode, doc, callback));
 	        },
+	        updateDocument: function updateDocument(node, callback) {
+	            return _dispatch((0, _tree_actions.updateDocument)(node, callback));
+	        },
 	        attachFile: function attachFile(node, upload, callback) {
 	            return _dispatch((0, _tree_actions.attachFile)(node, upload, callback));
 	        },
@@ -56623,6 +56625,25 @@
 	        }
 	    };
 	};
+
+	// var DocumentViewContainers = [
+	//     FileTree,
+	//     MainView,
+	//     RightMainView,
+	//     FileView,
+	//     FolderView,
+	//     CreateDocumentForm,
+	//     ShowACL,
+	//     ShowAudit,
+	//     ShowTask,
+	//     ShowWorkFlow,
+	//     AttachFile,
+	//     EditDocument
+	//                     ].reduce((containers, component) => {
+	//     containers[`${component.name}Container`] = connect(mapStateToProps, mapDispatchToProps)(component)
+	//     return containers
+	// }, {});
+
 
 	var MainViewContainer = exports.MainViewContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_main_view2.default);
 	var RightMainViewContainer = exports.RightMainViewContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_right_main_view2.default);
@@ -56637,6 +56658,8 @@
 	var AttachFileContainer = exports.AttachFileContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_attach_file2.default);
 	var EditDocumentContainer = exports.EditDocumentContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_edit_document2.default);
 
+	// export default DocumentViewContainers;
+
 /***/ },
 /* 275 */
 /***/ function(module, exports, __webpack_require__) {
@@ -56646,12 +56669,186 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.SET_PROPERTY = exports.ATTACH_FILE = exports.CREATE_NODE = exports.DELETE_NODE = exports.ADD_CHILD_NODES = exports.SET_ROOT_NODE = exports.SET_CURRENT_NODE = undefined;
+
+	var _redux = __webpack_require__(240);
+
+	var _reduxThunk = __webpack_require__(276);
+
+	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+
+	var _root_reducer = __webpack_require__(277);
+
+	var _root_reducer2 = _interopRequireDefault(_root_reducer);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var configureStore = function configureStore() {
+	    var preloadedState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+	    return (0, _redux.createStore)(_root_reducer2.default, preloadedState, (0, _redux.applyMiddleware)(_reduxThunk2.default));
+	};
+
+	exports.default = configureStore;
+
+/***/ },
+/* 276 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	function createThunkMiddleware(extraArgument) {
+	  return function (_ref) {
+	    var dispatch = _ref.dispatch;
+	    var getState = _ref.getState;
+	    return function (next) {
+	      return function (action) {
+	        if (typeof action === 'function') {
+	          return action(dispatch, getState, extraArgument);
+	        }
+
+	        return next(action);
+	      };
+	    };
+	  };
+	}
+
+	var thunk = createThunkMiddleware();
+	thunk.withExtraArgument = createThunkMiddleware;
+
+	exports['default'] = thunk;
+
+/***/ },
+/* 277 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _redux = __webpack_require__(240);
+
+	var _errors_reducer = __webpack_require__(278);
+
+	var _errors_reducer2 = _interopRequireDefault(_errors_reducer);
+
+	var _file_tree_reducer = __webpack_require__(279);
+
+	var _file_tree_reducer2 = _interopRequireDefault(_file_tree_reducer);
+
+	var _user_reducer = __webpack_require__(282);
+
+	var _user_reducer2 = _interopRequireDefault(_user_reducer);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = (0, _redux.combineReducers)({
+	    errors: _errors_reducer2.default,
+	    fileTree: _file_tree_reducer2.default,
+	    currentUser: _user_reducer2.default
+	});
+
+/***/ },
+/* 278 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _error_actions = __webpack_require__(265);
+
+	var ErrorsReducer = function ErrorsReducer() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	    var action = arguments[1];
+
+	    switch (action.type) {
+	        case _error_actions.RECEIVE_ERRORS:
+	            return [action.errors];
+	        case _error_actions.CLEAR_ERRORS:
+	            return [];
+	        default:
+	            return state;
+	    }
+	};
+
+	exports.default = ErrorsReducer;
+
+/***/ },
+/* 279 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _lodash = __webpack_require__(264);
+
+	var _tree_actions = __webpack_require__(280);
+
+	var defaultState = {
+	    root: {},
+	    currentNode: {}
+	};
+
+	var FileTreeReducer = function FileTreeReducer() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
+	    var action = arguments[1];
+
+	    switch (action.type) {
+	        case _tree_actions.SET_CURRENT_NODE:
+	            return (0, _lodash.merge)({}, state, { currentNode: action.currentNode });
+	        case _tree_actions.SET_ROOT_NODE:
+	            return (0, _lodash.merge)({}, state, { root: action.root });
+	        case _tree_actions.ADD_CHILD_NODES:
+	            action.childNodes.forEach(function (child) {
+	                action.parentNode.addChild(child);
+	            });
+	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        case _tree_actions.CREATE_NODE:
+	            action.parentNode.addChild(action.childNode);
+	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        case _tree_actions.DELETE_NODE:
+	            action.node.parent.removeChild(action.node);
+	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        case _tree_actions.UPDATE_NODE:
+	            action.node.item = action.newDoc;
+	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        case _tree_actions.ATTACH_FILE:
+	            action.node.item = action.newDoc;
+	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        case _tree_actions.SET_PROPERTY:
+	            action.node[action.property] = action.value;
+	            return (0, _lodash.merge)({}, state, { root: state.root });
+	        default:
+	            return state;
+	    }
+	};
+
+	exports.default = FileTreeReducer;
+
+/***/ },
+/* 280 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.SET_PROPERTY = exports.UPDATE_NODE = exports.ATTACH_FILE = exports.CREATE_NODE = exports.DELETE_NODE = exports.ADD_CHILD_NODES = exports.SET_ROOT_NODE = exports.SET_CURRENT_NODE = undefined;
 	exports.setCurrentNode = setCurrentNode;
 	exports.setRootNode = setRootNode;
 	exports.fetchChildren = fetchChildren;
 	exports.deleteDocument = deleteDocument;
 	exports.createDocument = createDocument;
+	exports.updateDocument = updateDocument;
 	exports.attachFile = attachFile;
 	exports.setProperty = setProperty;
 
@@ -56659,7 +56856,7 @@
 
 	var _nuxeo_utils2 = _interopRequireDefault(_nuxeo_utils);
 
-	var _tree_node = __webpack_require__(276);
+	var _tree_node = __webpack_require__(281);
 
 	var _tree_node2 = _interopRequireDefault(_tree_node);
 
@@ -56671,6 +56868,7 @@
 	var DELETE_NODE = exports.DELETE_NODE = "DELETE_NODE";
 	var CREATE_NODE = exports.CREATE_NODE = "CREATE_NODE";
 	var ATTACH_FILE = exports.ATTACH_FILE = "ATTACH_FILE";
+	var UPDATE_NODE = exports.UPDATE_NODE = "UPDATE_NODE";
 	var SET_PROPERTY = exports.SET_PROPERTY = "SET_PROPERTY";
 
 	function setCurrentNode(node) {
@@ -56754,6 +56952,26 @@
 	    };
 	}
 
+	function updateDocument(node, callback) {
+	    return function (dispatch) {
+	        _nuxeo_utils2.default.crudUtil({
+	            method: 'update',
+	            path: node.item.uid,
+	            data: node.item,
+	            success: function success(doc) {
+	                dispatch({
+	                    type: UPDATE_NODE,
+	                    node: node,
+	                    newDoc: doc
+	                });
+	            }
+	        });
+	        if (callback) {
+	            callback();
+	        }
+	    };
+	}
+
 	function attachFile(node, upload, callback) {
 	    return function (dispatch) {
 	        var success = function success(newDoc) {
@@ -56779,22 +56997,8 @@
 	    };
 	}
 
-	// export function editDocument(node, doc) {
-	//        let success = (doc) => {
-	//        };
-	//        let path = node.item.uid;
-	//        NuxeoUtils.crudUtil({
-	//           type: 'update',
-	//           path:  path,
-	//           data:  doc,
-	//           success: success
-	//        });
-	// }
-
-	var TreeActions = {};
-
-	["acl", "workflow", "task", "audit"].forEach(function (adapter) {
-	    TreeActions['get' + adapter] = function (node) {
+	var TreeActions = ["acl", "workflow", "task", "audit"].reduce(function (methods, adapter) {
+	    methods['get' + adapter] = function (node) {
 	        return function (dispatch) {
 	            var success = function success(res) {
 	                dispatch(setProperty(node, adapter, res));
@@ -56807,12 +57011,13 @@
 	            });
 	        };
 	    };
-	});
+	    return methods;
+	}, {});
 
 	exports.default = TreeActions;
 
 /***/ },
-/* 276 */
+/* 281 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -56871,7 +57076,33 @@
 	exports.default = TreeNode;
 
 /***/ },
-/* 277 */
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _user_actions = __webpack_require__(262);
+
+	var UserReducer = function UserReducer() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    var action = arguments[1];
+
+	    switch (action.type) {
+	        case _user_actions.SET_CURRENT_USER:
+	            return action.currentUser;
+	        default:
+	            return state;
+	    }
+	};
+
+	exports.default = UserReducer;
+
+/***/ },
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56886,7 +57117,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _document_type_constants = __webpack_require__(278);
+	var _document_type_constants = __webpack_require__(284);
 
 	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
 
@@ -56984,7 +57215,7 @@
 	exports.default = FileTree;
 
 /***/ },
-/* 278 */
+/* 284 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -57001,7 +57232,7 @@
 	exports.default = DocumentTypeConstants;
 
 /***/ },
-/* 279 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57084,7 +57315,7 @@
 	exports.default = MainView;
 
 /***/ },
-/* 280 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57099,7 +57330,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _document_type_constants = __webpack_require__(278);
+	var _document_type_constants = __webpack_require__(284);
 
 	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
 
@@ -57270,7 +57501,7 @@
 	exports.default = RightMainView;
 
 /***/ },
-/* 281 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57345,7 +57576,7 @@
 	module.exports = FileView;
 
 /***/ },
-/* 282 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57440,7 +57671,7 @@
 	module.exports = FolderView;
 
 /***/ },
-/* 283 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57451,9 +57682,9 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _tree_actions = __webpack_require__(275);
+	var _tree_actions = __webpack_require__(280);
 
-	var _document_type_constants = __webpack_require__(278);
+	var _document_type_constants = __webpack_require__(284);
 
 	var _document_type_constants2 = _interopRequireDefault(_document_type_constants);
 
@@ -57595,7 +57826,7 @@
 	module.exports = CreateDocument;
 
 /***/ },
-/* 284 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57610,7 +57841,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _tree_actions = __webpack_require__(275);
+	var _tree_actions = __webpack_require__(280);
 
 	var _tree_actions2 = _interopRequireDefault(_tree_actions);
 
@@ -57670,7 +57901,7 @@
 	exports.default = ShowACL;
 
 /***/ },
-/* 285 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57681,7 +57912,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _tree_actions = __webpack_require__(275);
+	var _tree_actions = __webpack_require__(280);
 
 	var _tree_actions2 = _interopRequireDefault(_tree_actions);
 
@@ -57759,7 +57990,7 @@
 	module.exports = ShowAudit;
 
 /***/ },
-/* 286 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57770,7 +58001,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _tree_actions = __webpack_require__(275);
+	var _tree_actions = __webpack_require__(280);
 
 	var _tree_actions2 = _interopRequireDefault(_tree_actions);
 
@@ -57815,7 +58046,7 @@
 	module.exports = ShowTask;
 
 /***/ },
-/* 287 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57826,7 +58057,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _tree_actions = __webpack_require__(275);
+	var _tree_actions = __webpack_require__(280);
 
 	var _tree_actions2 = _interopRequireDefault(_tree_actions);
 
@@ -57871,7 +58102,7 @@
 	module.exports = ShowWorkFlow;
 
 /***/ },
-/* 288 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57995,7 +58226,7 @@
 	module.exports = AttachFile;
 
 /***/ },
-/* 289 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58005,10 +58236,6 @@
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
-
-	var _tree_actions = __webpack_require__(275);
-
-	var _tree_actions2 = _interopRequireDefault(_tree_actions);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -58049,15 +58276,11 @@
 	        key: '_handleSubmit',
 	        value: function _handleSubmit(e) {
 	            e.preventDefault();
-	            var doc = this.props.fileTree.currentNode.item;
-
-	            // doc.set({ 'dc:title' : this.state.title});
-	            // doc.set({'dc:description': this.state.description});
-
+	            var node = this.props.fileTree.currentNode;
+	            var doc = node.item;
 	            doc.properties['dc:title'] = this.state.title;
 	            doc.properties['dc:description'] = this.state.description;
-	            _tree_actions2.default.editDocument(this.props.workingNode, doc);
-	            // this.setState({title:"", description: ""});
+	            this.props.updateDocument(node);
 	        }
 	    }, {
 	        key: 'render',
@@ -58088,202 +58311,6 @@
 	}(_react2.default.Component);
 
 	module.exports = EditDocument;
-
-/***/ },
-/* 290 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _redux = __webpack_require__(240);
-
-	var _reduxThunk = __webpack_require__(291);
-
-	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
-
-	var _root_reducer = __webpack_require__(292);
-
-	var _root_reducer2 = _interopRequireDefault(_root_reducer);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var configureStore = function configureStore() {
-	    var preloadedState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-	    return (0, _redux.createStore)(_root_reducer2.default, preloadedState, (0, _redux.applyMiddleware)(_reduxThunk2.default));
-	};
-
-	exports.default = configureStore;
-
-/***/ },
-/* 291 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	exports.__esModule = true;
-	function createThunkMiddleware(extraArgument) {
-	  return function (_ref) {
-	    var dispatch = _ref.dispatch;
-	    var getState = _ref.getState;
-	    return function (next) {
-	      return function (action) {
-	        if (typeof action === 'function') {
-	          return action(dispatch, getState, extraArgument);
-	        }
-
-	        return next(action);
-	      };
-	    };
-	  };
-	}
-
-	var thunk = createThunkMiddleware();
-	thunk.withExtraArgument = createThunkMiddleware;
-
-	exports['default'] = thunk;
-
-/***/ },
-/* 292 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _redux = __webpack_require__(240);
-
-	var _errors_reducer = __webpack_require__(293);
-
-	var _errors_reducer2 = _interopRequireDefault(_errors_reducer);
-
-	var _file_tree_reducer = __webpack_require__(294);
-
-	var _file_tree_reducer2 = _interopRequireDefault(_file_tree_reducer);
-
-	var _user_reducer = __webpack_require__(295);
-
-	var _user_reducer2 = _interopRequireDefault(_user_reducer);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = (0, _redux.combineReducers)({
-	    errors: _errors_reducer2.default,
-	    fileTree: _file_tree_reducer2.default,
-	    currentUser: _user_reducer2.default
-	});
-
-/***/ },
-/* 293 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _error_actions = __webpack_require__(265);
-
-	var ErrorsReducer = function ErrorsReducer() {
-	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-	    var action = arguments[1];
-
-	    switch (action.type) {
-	        case _error_actions.RECEIVE_ERRORS:
-	            return [action.errors];
-	        case _error_actions.CLEAR_ERRORS:
-	            return [];
-	        default:
-	            return state;
-	    }
-	};
-
-	exports.default = ErrorsReducer;
-
-/***/ },
-/* 294 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _lodash = __webpack_require__(264);
-
-	var _tree_actions = __webpack_require__(275);
-
-	var defaultState = {
-	    root: {},
-	    currentNode: {}
-	};
-
-	var FileTreeReducer = function FileTreeReducer() {
-	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
-	    var action = arguments[1];
-
-	    switch (action.type) {
-	        case _tree_actions.SET_CURRENT_NODE:
-	            return (0, _lodash.merge)({}, state, { currentNode: action.currentNode });
-	        case _tree_actions.SET_ROOT_NODE:
-	            return (0, _lodash.merge)({}, state, { root: action.root });
-	        case _tree_actions.ADD_CHILD_NODES:
-	            action.childNodes.forEach(function (child) {
-	                action.parentNode.addChild(child);
-	            });
-	            return (0, _lodash.merge)({}, state, { root: state.root });
-	        case _tree_actions.CREATE_NODE:
-	            action.parentNode.addChild(action.childNode);
-	            return (0, _lodash.merge)({}, state, { root: state.root });
-	        case _tree_actions.DELETE_NODE:
-	            action.node.parent.removeChild(action.node);
-	            return (0, _lodash.merge)({}, state, { root: state.root });
-	        case _tree_actions.ATTACH_FILE:
-	            action.node.item = action.newDoc;
-	            return (0, _lodash.merge)({}, state, { root: state.root });
-	        case _tree_actions.SET_PROPERTY:
-	            action.node[action.property] = action.value;
-	            return (0, _lodash.merge)({}, state, { root: state.root });
-	        default:
-	            return state;
-	    }
-	};
-
-	exports.default = FileTreeReducer;
-
-/***/ },
-/* 295 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _user_actions = __webpack_require__(262);
-
-	var UserReducer = function UserReducer() {
-	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var action = arguments[1];
-
-	    switch (action.type) {
-	        case _user_actions.SET_CURRENT_USER:
-	            return action.currentUser;
-	        default:
-	            return state;
-	    }
-	};
-
-	exports.default = UserReducer;
 
 /***/ }
 /******/ ]);

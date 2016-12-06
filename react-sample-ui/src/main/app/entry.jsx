@@ -6,8 +6,8 @@ import { Provider } from 'react-redux';
 // components
 import LogInContainer from './components/log_in/log_in_container.js';
 import ErrorsContainer from './components/errors/errors_container.jsx';
-import Containers from './components/document_view/document_view_container';
-console.log(Containers)
+
+
 import { MainViewContainer } from './components/document_view/document_view_container';
 
 // store

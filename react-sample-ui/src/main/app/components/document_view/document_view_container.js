@@ -6,6 +6,7 @@ import {
     deleteDocument,
     createDocument,
     attachFile,
+    updateDocument
 } from '../../actions/tree_actions';
 import { flashErrors } from '../../actions/error_actions';
 
@@ -34,9 +35,29 @@ const mapDispatchToProps = (dispatch) => ({
     fetchChildren: (parentNode) => dispatch(fetchChildren(parentNode)),
     deleteDocument: (node, callback) => dispatch(deleteDocument(node, callback)),
     createDocument: (parentNode, doc, callback) => dispatch(createDocument(parentNode, doc, callback)),
+    updateDocument: (node, callback) => dispatch(updateDocument(node, callback)),
     attachFile: (node, upload, callback) => dispatch(attachFile(node, upload, callback)),
     dispatch: (action) => dispatch(action),
 });
+
+// var DocumentViewContainers = [
+//     FileTree,
+//     MainView,
+//     RightMainView,
+//     FileView,
+//     FolderView,
+//     CreateDocumentForm,
+//     ShowACL,
+//     ShowAudit,
+//     ShowTask,
+//     ShowWorkFlow,
+//     AttachFile,
+//     EditDocument
+//                     ].reduce((containers, component) => {
+//     containers[`${component.name}Container`] = connect(mapStateToProps, mapDispatchToProps)(component)
+//     return containers
+// }, {});
+
 
 
 export var MainViewContainer = connect(mapStateToProps, mapDispatchToProps)(MainView);
@@ -51,6 +72,9 @@ export var ShowTaskContainer = connect(mapStateToProps, mapDispatchToProps)(Show
 export var ShowWorkFlowContainer = connect(mapStateToProps, mapDispatchToProps)(ShowWorkFlow);
 export var AttachFileContainer = connect(mapStateToProps, mapDispatchToProps)(AttachFile);
 export var EditDocumentContainer = connect(mapStateToProps, mapDispatchToProps)(EditDocument);
+
+
+// export default DocumentViewContainers;
 
 
 

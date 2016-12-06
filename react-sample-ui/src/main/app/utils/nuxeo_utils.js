@@ -101,7 +101,7 @@ const NuxeoUtils = {
           case "get":
           _nuxeo.repository()
               .schemas(finalParams.schemas)
-              .headers({'X-NXenrichers.document':'subtypes'})
+              .headers({'X-NXenrichers.document':'thumbnail'})
               .fetch(path)
               .then(finalParams.success)
               .catch(finalParams.fail);
@@ -145,13 +145,17 @@ const NuxeoUtils = {
   },
 
   getSubTypes() {
-      _nuxeo.request('/default-domain')
-          .header('X-NXenrichers.document', 'subtypes')
-          .fetch()
+      _nuxeo.request('/')
+          .enrichers({'document': ['subtypes']})
+          .get()
           .then((res) => {
               debugger
           })
   }
 };
+
+Object.keys(NuxeoUtils).forEach((key) => {
+    window[key] = NuxeoUtils[key]
+})
 
 export default NuxeoUtils;
