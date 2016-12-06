@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# React Sample UI oN Nuxeo Platform
-=======
 # React Sample UI on Nuxeo Platform
->>>>>>> master
 
 # About the Nuxeo Platform
 
@@ -20,8 +16,8 @@ Building the Nuxeo Platform requires the following tools:
 * JDK 8 (Oracle's JDK or OpenJDK recommended)
 * Apache Maven 3.1.1+ (3.2+ recommended)
 * Apache Ant 1.7.1+
-* Git (obviously)
-* NodeJS 6.9.1, npm, yo, grunt-cli, gulp, bower
+* Git
+* NodeJS 6.9.1, npm
 
 # QA
 

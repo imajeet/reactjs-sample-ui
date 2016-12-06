@@ -22,13 +22,6 @@ const correctLogIn = function (browser) {
     return browser;
 };
 
-// beforeEach(function() {
-//     browser.url('/')
-//         .setValue('#username.login_input', logIn[0].username)
-//         .setValue('#password.login_input', logIn[0].password)
-//         .click('.login_button')
-// });
-
 describe('Nuxeo successful login page', function() {
     it('should login successfully when given correct login', function() {
         correctLogIn(browser);
