@@ -11,7 +11,7 @@
     <import file="${out.dir}/nuxeo-ftest.xml"/>
 
     <!-- Instruction for installing the MP to be tested -->
-    <property name="mp.install" value="file:${out.dir}/thesource-marketplace-${maven.project.version}.zip"/>
+    <property name="mp.install" value="file:${out.dir}/nuxeo-app-redo-package-${maven.project.version}.zip"/>
     <!-- Override default prepare-environment target to make it download your MP -->
     <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss">
         <condition property="cmd.npm" value="npm.cmd" else="npm">
@@ -23,42 +23,42 @@
         <exec executable="${cmd.npm}" spawn="true">
             <arg value="start"/>
         </exec>
-        <!--<copy todir="${out.dir}">-->
-            <!--<artifact:file key="react.sample.ui:react-marketplace::zip"/>-->
-        <!--</copy>-->
+        <copy todir="${out.dir}">
+            <artifact:file key="react.sample.ui:nuxeo-app-redo-package::zip"/>
+        </copy>
     </target>
 
-    <!-- temp workaround for NXBT-912 -->
-    <target name="start-unix" if="osfamily-unix">
-        <if>
-            <available file="${nuxeo.data}/installAfterRestart.log"/>
-            <then>
-                <echo level="info" message="Execute pending actions before start"/>
-                <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="true">
-                    <arg value="mp-hotfix"/>
-                    <arg value="${nuxeoctl.option.clid}" if:set="nuxeoctl.option.clid" unless:blank="${nuxeoctl.option.clid}"/>
-                    <env key="LAUNCHER_DEBUG" value="${launcher.debug}"/>
-                </exec>
-                <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="true">
-                    <arg value="mp-install"/>
-                    <arg value="${nuxeoctl.option.clid}" if:set="nuxeoctl.option.clid" unless:blank="${nuxeoctl.option.clid}"/>
-                    <env key="LAUNCHER_DEBUG" value="${launcher.debug}"/>
-                </exec>
-            </then>
-        </if>
-        <chmod dir="${nuxeo.home}/bin" perm="ugx" includes="*.sh,*ctl"/>
-        <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="false" resultproperty="retcode">
-            <arg value="start"/>
-            <arg value="${nuxeoctl.option.clid}" if:set="nuxeoctl.option.clid" unless:blank="${nuxeoctl.option.clid}"/>
-            <env key="LAUNCHER_DEBUG" value="${launcher.debug}"/>
+<!-- temp workaround for NXBT-912 -->
+  <target name="start-unix" if="osfamily-unix">
+    <if>
+      <available file="${nuxeo.data}/installAfterRestart.log"/>
+      <then>
+        <echo level="info" message="Execute pending actions before start"/>
+        <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="true">
+          <arg value="mp-hotfix"/>
+          <arg value="${nuxeoctl.option.clid}" if:set="nuxeoctl.option.clid" unless:blank="${nuxeoctl.option.clid}"/>
+          <env key="LAUNCHER_DEBUG" value="${launcher.debug}"/>
         </exec>
-        <condition property="startup.failed" value="${retcode}">
-            <not>
-                <equals arg1="${retcode}" arg2="0"/>
-            </not>
-        </condition>
-        <antcall target="stop-iffailed"/>
-    </target>
+        <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="true">
+          <arg value="mp-install"/>
+          <arg value="${nuxeoctl.option.clid}" if:set="nuxeoctl.option.clid" unless:blank="${nuxeoctl.option.clid}"/>
+          <env key="LAUNCHER_DEBUG" value="${launcher.debug}"/>
+        </exec>
+      </then>
+    </if>
+    <chmod dir="${nuxeo.home}/bin" perm="ugx" includes="*.sh,*ctl"/>
+    <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="false" resultproperty="retcode">
+      <arg value="start"/>
+      <arg value="${nuxeoctl.option.clid}" if:set="nuxeoctl.option.clid" unless:blank="${nuxeoctl.option.clid}"/>
+      <env key="LAUNCHER_DEBUG" value="${launcher.debug}"/>
+    </exec>
+    <condition property="startup.failed" value="${retcode}">
+      <not>
+        <equals arg1="${retcode}" arg2="0"/>
+      </not>
+    </condition>
+    <antcall target="stop-iffailed"/>
+  </target>
 
     <target name="run-tests" depends="_init">
         <condition property="cmd.npm" value="npm.cmd" else="npm">
