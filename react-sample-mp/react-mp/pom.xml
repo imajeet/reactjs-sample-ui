@@ -30,6 +30,11 @@
       <groupId>react.sample.ui</groupId>
       <artifactId>react-ui</artifactId>
     </dependency>
+    <!-- Potential studio project dependency -->
+    <!-- <dependency>
+      <groupId>nuxeo-studio</groupId>
+      <artifactId>your-project</artifactId>
+    </dependency> -->
   </dependencies>
 
   <build>
