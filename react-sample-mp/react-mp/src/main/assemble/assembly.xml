@@ -41,6 +41,7 @@
           <artifact groupId="nuxeo-studio" />
           <!-- Include your artifacts using their groupId for instance -->
           <artifact groupId="org.nuxeo.ecm.distribution*" />
+          <artifact groupId="react.sample.ui" />
         </includes>
         <excludes>
           <artifact groupId="${maven.project.groupId}" artifactId="${maven.project.artifactId}" version="${maven.project.version}" type="${maven.project.packaging}"/>

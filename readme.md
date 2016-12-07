@@ -34,7 +34,7 @@ mvn clean install
 ```
 3. Starting
 ```
-Navigate to root folder and click on Start Nuxeo.command
+Run ./nuxeoctl console on terminal from the bin folder of main build.
 Go to http://localhost:8080
 Log In with username: Administrator, password: Administrator
 Set URL to http://localhost:8080/nuxeo/sampleUI

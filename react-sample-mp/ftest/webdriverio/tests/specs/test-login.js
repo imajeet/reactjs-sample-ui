@@ -40,10 +40,23 @@ describe('Nuxeo fail login page', function() {
             .setValue('#username.login_input', logIn[1].username)
             .setValue('#password.login_input', logIn[1].password)
             .click('.login_button');
-           let error =  browser.getText('.feedbackmessage.errormessage');
+           var error =  browser.getText('.feedbackMessage.errorMessage');
            assert(error === 'Invalid username or password');
-
     });
+});
+
+
+describe('Navigate to Sample UI', function () {
+    it('should be on the Sample UI page', function () {
+        correctLogIn(browser)
+            .url('/nuxeo/sampleUI')
+            .click('.login-button')
+
+        var panelText = $(".side-panel-profile")
+        panelText.waitForExist(2000)
+        assert(panelText.getText() === 'Administrator')
+
+    })
 });
 
 module.exports = correctLogIn;
