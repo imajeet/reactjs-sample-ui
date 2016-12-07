@@ -6,3 +6,4 @@ WDIO.xunitchrome.0-0.xml
 target
 .DS_Store
 .idea
+.tmp
