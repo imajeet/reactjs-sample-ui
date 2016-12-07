@@ -1,4 +1,8 @@
 {
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:nuxeo-sandbox/reactjs-sample-ui.git"
+  },
   "name": "nuxeo_app",
   "version": "1.0.0",
   "description": "",
