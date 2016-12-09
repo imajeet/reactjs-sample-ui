@@ -11,7 +11,7 @@
     <import file="${out.dir}/nuxeo-ftest.xml"/>
 
     <!-- Instruction for installing the MP to be tested -->
-    <property name="mp.install" value="file:${out.dir}/nuxeo-app-redo-package-${maven.project.version}.zip"/>
+    <property name="mp.install" value="file:${out.dir}/reactjs-sample-ui-package-${maven.project.version}.zip"/>
     <!-- Override default prepare-environment target to make it download your MP -->
     <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss">
         <condition property="cmd.npm" value="npm.cmd" else="npm">
@@ -27,7 +27,7 @@
             <!-- a potential studio bundle -->
             <!--<artifact:file key="nuxeo-studio:your-project" />-->
             <!-- your bundles -->
-            <artifact:file key="react.sample.ui:nuxeo-app-redo-package::zip"/>
+            <artifact:file key="react.sample.ui:reactjs-sample-ui-package::zip"/>
         </copy>
     </target>
 

@@ -8,8 +8,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "perform_tests": "./node_modules/.bin/wdio wdio.conf.js",
-    "watch": "webpack --watch"
+    "postinstall": "webpack",
+    "perform_tests": "./node_modules/.bin/wdio wdio.conf.js"
   },
   "keywords": [],
   "author": "",

@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>react.sample.ui</groupId>
-            <artifactId>nuxeo-app-redo-package</artifactId>
+            <artifactId>reactjs-sample-ui-package</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>zip</type>
             <scope>test</scope>
