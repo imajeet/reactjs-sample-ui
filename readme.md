@@ -1,4 +1,6 @@
-# React Sample UI on Nuxeo Platform
+# About
+
+* Sample Application to learn how to build an application using ReactJS and install it inside Nuxeo Server.
 
 # About the Nuxeo Platform
 
@@ -6,7 +8,14 @@ The [Nuxeo Platform](http://www.nuxeo.com/products/content-management-platform/)
 
 The Nuxeo Platform is developed and supported by Nuxeo, with contributions from the community.
 
-## Requirements
+# Installation
+
+This `reactjs-sample` project can be installed from the [Nuxeo Marketplace](https://connect.nuxeo.com/nuxeo/site/marketplace) or using this command line:
+```
+./bin/nuxeoctl mp-install reactjs-sample
+```
+
+# Requirements
 
 Running the Nuxeo Platform requires Java 8.
 Depending on the features you want to use, you may need some third-party software, such as Libre Office and pdftohtml for document preview or ImageMagick for pictures. The list of third-party software is available in our Admin documentation: [Installing and Setting Up Related Software](http://doc.nuxeo.com/x/zgJc).
@@ -18,27 +27,34 @@ Building the Nuxeo Platform requires the following tools:
 * Apache Ant 1.7.1+
 * Git
 * NodeJS 6.9.1, npm
+* Nuxeo Server - [Install Instructions](https://doc.nuxeo.com/nxdoc/installation/)
 
-# QA
-
-# Deploying
+# Build
 
 1. Get the source code:
-```
-git clone https://github.com/nuxeo-sandbox/reactjs-sample-ui
+    ```
+    git clone https://github.com/nuxeo/reactjs-sample-ui
+    ```
 
-```
 2. Build using Maven:
-```
-mvn clean install
-```
-3. Starting
-```
-Run ./nuxeoctl console on terminal from the bin folder of main build.
-Go to http://localhost:8080
-Log In with username: Administrator, password: Administrator
-Set URL to http://localhost:8080/nuxeo/sampleUI
-```
+    ```
+    mvn clean install -Pmp
+    ```
+
+3. Installing
+
+    From the Nuxeo Server folder:
+    ```
+    ./bin/nuxeoctl mp-install reactjs-sample-package/target/reactjs-sample-package-*.zip
+    ```
+
+4. Starting Server
+
+    - Run `./bin/nuxeoctl start` in a terminal from the fresh distribution folder.
+    - Go to http://localhost:8080
+    - Log In with username: Administrator, password: Administrator
+    - Open http://localhost:8080/nuxeo/sampleUI
+
 
 See our [Core Developer Guide](http://doc.nuxeo.com/x/B4BH) for instructions and guidelines.
 
@@ -58,7 +74,7 @@ The documentation for the Nuxeo Platform is available in our [Documentation Cent
 Most of the source code in the Nuxeo Platform is copyright Nuxeo SA and
 contributors, and licensed under the GNU Lesser General Public License v2.1.
 
-See [/licenses](/licenses) and the documentation page [Licenses](http://doc.nuxeo.com/x/gIK7) for details.
+See documentation page [Licenses](http://doc.nuxeo.com/x/gIK7) for details.
 
 # About Nuxeo
 

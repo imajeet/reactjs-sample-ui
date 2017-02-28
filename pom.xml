@@ -1,36 +1,34 @@
 <?xml version="1.0"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>8.4-SNAPSHOT</version>
+    <version>8.10</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>react.sample.ui</groupId>
-  <artifactId>react-ui-parent</artifactId>
+  <groupId>org.nuxeo.sample.reactjs</groupId>
+  <artifactId>reactjs-sample-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>The REACT UI Module Parent</name>
-  <description>The REACT UI Module Parent</description>
+  <name>ReactJS Sample - Parent</name>
   <packaging>pom</packaging>
+
+  <modules>
+    <module>reactjs-sample-ui</module>
+  </modules>
 
   <profiles>
     <profile>
-      <id>default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <id>mp</id>
       <modules>
-        <module>react-sample-ui</module>
+        <module>reactjs-sample-package</module>
       </modules>
     </profile>
     <profile>
-      <id>mp</id>
+      <id>ftest</id>
       <modules>
-        <module>react-sample-ui</module>
-        <module>react-sample-mp</module>
+        <module>reactjs-sample-package</module>
+        <module>reactjs-sample-ftest</module>
       </modules>
     </profile>
   </profiles>
@@ -38,53 +36,28 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution</artifactId>
-        <scope>import</scope>
-        <type>pom</type>
-        <version>8.4-SNAPSHOT</version>
+        <groupId>org.nuxeo.sample.reactjs</groupId>
+        <artifactId>reactjs-sample-ui</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>react.sample.ui</groupId>
-        <artifactId>react-ui</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>org.nuxeo.sample.reactjs</groupId>
+        <artifactId>reactjs-sample-ftest</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.sample.reactjs</groupId>
+        <artifactId>reactjs-sample-package</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.17</version>
-        <configuration>
-          <argLine>-Dfile.encoding=UTF-8</argLine>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.surefire</groupId>
-            <artifactId>surefire-junit47</artifactId>
-            <version>2.17</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/reactjs-sample-ui.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/reactjs-sample-ui.git</developerConnection>
+    <url>https://github.com/nuxeo/reactjs-sample-ui</url>
+  </scm>
 
   <repositories>
     <repository>
@@ -109,7 +82,7 @@
       </snapshots>
     </repository>
     <repository>
-      <id>nuxeo-studio-official</id>
+      <id>nuxeo-studio</id>
       <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
       <releases>
         <enabled>true</enabled>
