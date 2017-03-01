@@ -8,8 +8,8 @@
     <!-- Include your artifacts in the graph adding your groupId to groupPrefixes -->
     <artifact:nuxeo-expand includeTestScope="true" groupPrefixes="org.nuxeo,org.nuxeo.ecm.distribution"/>
     <!-- For Nuxeo IDE being able to use that distribution as a SDK -->
-    <artifact:print output="${outdir}/artifacts.properties" mode="sdk"/>
-    <artifact:print output="${outdir}/test-artifacts.properties" mode="sdk" scopes="test"/>
+    <artifact:print output="${outdir}/reactjs-sample-artifacts.properties" mode="sdk"/>
+    <artifact:print output="${outdir}/reactjs-sample-test-artifacts.properties" mode="sdk" scopes="test"/>
     <!-- Prints the graph for debugging purpose -->
     <artifact:print output="${outdir}/dependency-tree.log"/>
     <tstamp/>
@@ -25,8 +25,8 @@
         <filter token="DISTRIB_VERSION" value="${nuxeo.distribution.version}"/>
       </filterset>
     </copy>
-    <copy file="${outdir}/artifacts.properties" todir="${outdir}/marketplace/install"/>
-    <copy file="${outdir}/test-artifacts.properties" todir="${outdir}/marketplace/install"/>
+    <copy file="${outdir}/reactjs-sample-artifacts.properties" todir="${outdir}/marketplace/install"/>
+    <copy file="${outdir}/reactjs-sample-test-artifacts.properties" todir="${outdir}/marketplace/install"/>
 
     <!-- Base distribution NXR -->
     <copy todir="${outdir}">
@@ -39,9 +39,6 @@
         <includes>
           <artifact groupId="org.nuxeo*" />
           <artifact groupId="nuxeo-studio" />
-          <!-- Include your artifacts using their groupId for instance -->
-          <artifact groupId="org.nuxeo.ecm.distribution*" />
-          <artifact groupId="react.sample.ui" />
         </includes>
         <excludes>
           <artifact groupId="${maven.project.groupId}" artifactId="${maven.project.artifactId}" version="${maven.project.version}" type="${maven.project.packaging}"/>
@@ -65,7 +62,6 @@
           <artifact type="pom" />
           <artifact groupId="nuxeo-studio" />
           <!-- Filter out your artifacts using their groupId for instance -->
-          <artifact groupId="org.nuxeo.ecm.distribution*"/>
         </excludes>
       </artifact:set>
     </copy>
@@ -81,11 +77,11 @@
       file2="${outdir}/nuxeo-nxr-server-${nuxeo.distribution.version}.zip"
       includesfile="${outdir}/includes"
       excludesfile="${outdir}/excludesfile"
-      patternsetid="sample.versus.cap"
+      patternsetid="reactjs.versus.cap"
       ignoreContent="false"
       ignoreContentPattern=".*\.jar$"></nx:zipdiff>
     <unzip src="${outdir}/nxr-${maven.project.version}.zip" dest="${outdir}/marketplace/install">
-      <patternset refid="sample.versus.cap"/>
+      <patternset refid="reactjs.versus.cap"/>
     </unzip>
 
     <!-- Generate install.xml content -->

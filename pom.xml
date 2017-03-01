@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>8.10</version>
+    <version>9.1-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -15,23 +15,9 @@
 
   <modules>
     <module>reactjs-sample-ui</module>
+    <module>reactjs-sample-package</module>
+    <module>reactjs-sample-ftest</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>mp</id>
-      <modules>
-        <module>reactjs-sample-package</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>ftest</id>
-      <modules>
-        <module>reactjs-sample-package</module>
-        <module>reactjs-sample-ftest</module>
-      </modules>
-    </profile>
-  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -49,6 +35,7 @@
         <groupId>org.nuxeo.sample.reactjs</groupId>
         <artifactId>reactjs-sample-package</artifactId>
         <version>${project.version}</version>
+        <type>zip</type>
       </dependency>
     </dependencies>
   </dependencyManagement>

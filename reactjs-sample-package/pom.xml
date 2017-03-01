@@ -24,12 +24,6 @@
       <groupId>org.nuxeo.sample.reactjs</groupId>
       <artifactId>reactjs-sample-ui</artifactId>
     </dependency>
-    <!-- Potential studio project dependency
-    <dependency>
-      <groupId>nuxeo-studio</groupId>
-      <artifactId>your-project</artifactId>
-    </dependency>
-    -->
   </dependencies>
 
   <build>
