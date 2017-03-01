@@ -1,3 +1,8 @@
+
+| Nuxeo QA Job | Status |
+|-----|--------|
+| Build & Unit tests | [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/plugins_react-sample-ui-master)](https://qa.nuxeo.org/jenkins/job/master/job/plugins_react-sample-ui-master)|
+
 # About
 
 * Sample Application to learn how to build an application using ReactJS and install it inside Nuxeo Server.
@@ -69,12 +74,13 @@ The documentation for the Nuxeo Platform is available in our [Documentation Cent
 * User documentation: [http://doc.nuxeo.com/x/6ICo](http://doc.nuxeo.com/x/6ICo)
 * Core Developer Guide: [http://doc.nuxeo.com/x/B4BH](http://doc.nuxeo.com/x/B4BH)
 
+
 # Licensing
 
-Most of the source code in the Nuxeo Platform is copyright Nuxeo SA and
-contributors, and licensed under the GNU Lesser General Public License v2.1.
+Most of the source code in the Nuxeo Platform is copyright Nuxeo and
+contributors, and licensed under the Apache License, Version 2.0.
 
-See documentation page [Licenses](http://doc.nuxeo.com/x/gIK7) for details.
+See [/licenses](/licenses) and the documentation page [Licenses](http://doc.nuxeo.com/x/gIK7) for details.
 
 # About Nuxeo
 
