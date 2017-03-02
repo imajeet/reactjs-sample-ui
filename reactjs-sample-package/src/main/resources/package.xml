@@ -21,15 +21,15 @@
   </platforms>
   <!-- Dependencies on other packages -->
   <!-- <dependencies> -->
-  <!-- <package>another-package:1.0.0:1.0.0</package> -->
+  <!-- <package>another-package:1.0.1-SNAPSHOT.0:1.0.1-SNAPSHOT.0</package> -->
   <!-- </dependencies> -->
   <!-- Conflicts with other packages -->
   <!-- <conflicts> -->
-  <!-- <package>a-conflicting-package:1.0.0:1.0.0</package> -->
+  <!-- <package>a-conflicting-package:1.0.1-SNAPSHOT.0:1.0.1-SNAPSHOT.0</package> -->
   <!-- </conflicts> -->
   <!-- Provides features of other packages -->
   <!-- <provides> -->
-  <!-- <package>an-embedded-package:1.0.0:1.0.0</package> -->
+  <!-- <package>an-embedded-package:1.0.1-SNAPSHOT.0:1.0.1-SNAPSHOT.0</package> -->
   <!-- </provides> -->
   <license>Apache License, Version 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
