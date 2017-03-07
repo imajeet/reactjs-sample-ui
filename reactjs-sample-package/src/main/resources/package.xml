@@ -1,6 +1,6 @@
 <!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
 <package type="addon" name="reactjs-sample" version="@VERSION@">
-  <title>The react ui module</title>
+  <title>ReactJS Sample</title>
   <description>
     <p>Sample Application to learn how to build an application using ReactJS and install it inside Nuxeo Server.</p>
   </description>
