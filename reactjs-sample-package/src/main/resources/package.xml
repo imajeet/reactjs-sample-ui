@@ -11,10 +11,10 @@
   <!-- <hotreload-support>false</hotreload-support> -->
   <!-- <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance> -->
   <!-- Nuxeo Validation: none | inprocess | primary_validation | nuxeo_certified -->
-  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <nuxeo-validation>primary_validation</nuxeo-validation>
   <!-- Production State: production_ready | testing | proto -->
   <production-state>proto</production-state>
-  <supported>true</supported>
+  <supported>false</supported>
   <platforms>
     <platform>server-@DISTRIB_VERSION@</platform>
     <platform>server-@DISTRIB_VERSION@-*</platform>
